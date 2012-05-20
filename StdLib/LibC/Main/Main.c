@@ -31,7 +31,7 @@
 #include  <MainData.h>
 #include  <unistd.h>
 
-extern int main( int, char**);
+extern int EFIAPI main( int, char**);
 extern int __sse2_available;
 
 struct  __MainData  *gMD;
