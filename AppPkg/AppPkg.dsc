@@ -101,9 +101,10 @@
 [Components]
 
 #### Sample Applications.
-  AppPkg/Applications/Hello/Hello.inf        # No LibC includes or functions.
-  AppPkg/Applications/Main/Main.inf          # Simple invocation. No other LibC functions.
-  AppPkg/Applications/Enquire/Enquire.inf    #
+  AppPkg/Applications/mruby/mruby.inf
+#  AppPkg/Applications/Hello/Hello.inf        # No LibC includes or functions.
+#  AppPkg/Applications/Main/Main.inf          # Simple invocation. No other LibC functions.
+#  AppPkg/Applications/Enquire/Enquire.inf    #
 
 #### After extracting the Python distribution, un-comment the following line to build Python.
 #  AppPkg/Applications/Python/PythonCore.inf
