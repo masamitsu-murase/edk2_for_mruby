@@ -107,7 +107,7 @@ __BEGIN_DECLS
 
     @return   The memcpy function returns the value of Dest.
 **/
-void     *memcpy(void * __restrict Dest, const void * __restrict Src, size_t N);
+void     *memcpy(void * __restrict Dest, const void * __restrict Src, size_t len);
 
 /** The memmove function copies N characters from the object pointed to by Src
     into the object pointed to by Dest. Copying takes place as if the N
@@ -122,7 +122,7 @@ void     *memcpy(void * __restrict Dest, const void * __restrict Src, size_t N);
 
     @return   The memmove function returns the value of Dest.
 **/
-void     *memmove(void *Dest, const void *Src, size_t N);
+void     *memmove(void *Dest, const void *Src, size_t len);
 
 /** The strcpy function copies the string pointed to by Src (including the
     terminating null character) into the array pointed to by Dest. If copying
@@ -150,7 +150,7 @@ char     *strcpy(char * __restrict Dest, const char * __restrict Src);
 
     @return   The strncpy function returns the value of Dest.
 **/
-char     *strncpy(char * __restrict Dest, const char * __restrict Src, size_t N);
+char     *strncpy(char * __restrict Dest, const char * __restrict Src, size_t len);
 
 /** The strncpyX function copies not more than N-1 characters (characters that
     follow a null character are not copied) from the array pointed to by Src to
@@ -170,7 +170,7 @@ char     *strncpy(char * __restrict Dest, const char * __restrict Src, size_t N)
               a non-zero value is returned indicating how many characters
               remain in Dest.
 **/
-int       strncpyX(char * __restrict Dest, const char * __restrict Src, size_t N);
+int       strncpyX(char * __restrict Dest, const char * __restrict Src, size_t len);
 
 /* ################   Concatenation Functions   ########################### */
 
@@ -200,7 +200,7 @@ char     *strcat(char * __restrict Dest, const char * __restrict Src);
 
     @return   The strncat function returns the value of Dest.
 **/
-char     *strncat(char * __restrict Dest, const char * __restrict Src, size_t N);
+char     *strncat(char * __restrict Dest, const char * __restrict Src, size_t len);
 
 /** The strncatX function appends not more than N characters (a null character
     and characters that follow it are not appended) from the array pointed to
@@ -235,7 +235,7 @@ int       strncatX(char * __restrict s1, const char * __restrict s2, size_t n);
               less than zero, accordingly as the object pointed to by S1 is
               greater than, equal to, or less than the object pointed to by S2.
 **/
-int       memcmp(const void *S1, const void *S2, size_t N);
+int       memcmp(const void *S1, const void *S2, size_t len);
 
 /** The strcmp function compares the string pointed to by S1 to the string
     pointed to by S2.
@@ -276,7 +276,7 @@ int       strcoll(const char *S1, const char *S2);
               array pointed to by S1 is greater than, equal to, or less than
               the possibly null-terminated array pointed to by S2.
 **/
-int       strncmp(const char *S1, const char *S2, size_t N);
+int       strncmp(const char *S1, const char *S2, size_t len);
 
 /** The strxfrm function transforms the string pointed to by Src and places the
     resulting string into the array pointed to by Dest. The transformation is
@@ -297,7 +297,7 @@ int       strncmp(const char *S1, const char *S2, size_t N);
               returned is N or more, the contents of the array pointed to by Dest
               are indeterminate.
 **/
-size_t    strxfrm(char * __restrict Dest, const char * __restrict Src, size_t N);
+size_t    strxfrm(char * __restrict Dest, const char * __restrict Src, size_t len);
 
 /* ################   Search Functions   ################################## */
 
@@ -312,7 +312,7 @@ size_t    strxfrm(char * __restrict Dest, const char * __restrict Src, size_t N)
     @return   The memchr function returns a pointer to the located character,
               or a null pointer if the character does not occur in the object.
 **/
-void     *memchr(const void *S, int C, size_t N);
+void     *memchr(const void *S, int C, size_t len);
 
 /** The strchr function locates the first occurrence of C (converted to a char)
     in the string pointed to by S. The terminating null character is considered
@@ -430,7 +430,7 @@ char     *strtok(char * __restrict S1, const char * __restrict S2);
 
     @return   The memset function returns the value of S.
 **/
-void     *memset(void *S, int C, size_t N);
+void     *memset(void *S, int C, size_t len);
 
 /** The strerror function maps the number in Num to a message string.
     Typically, the values for Num come from errno, but strerror shall map
