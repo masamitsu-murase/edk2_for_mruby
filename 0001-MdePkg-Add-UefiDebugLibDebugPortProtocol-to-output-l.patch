@@ -1,0 +1,461 @@
+Subject: [edk2] [PATCH v2] MdePkg: Add UefiDebugLibDebugPortProtocol to output logs via EFI_DEBUGPORT_PROTOCOL.Write.
+
+
+
+MdePkg: Add UefiDebugLibDebugPortProtocol to output logs via EFI_DEBUGPORT_PROTOCOL.Write.
+
+UefiDebugLibDebugPortProtocol is an implementation of DebugLib.
+It calls EFI_DEBUGPORT_PROTOCOL.Write in DebugPrint and DebugAssert.
+
+Contributed-under: TianoCore Contribution Agreement 1.0
+Signed-off-by: Masamitsu MURASE <masamitsu.murase@gmail.com>
+---
+ .../UefiDebugLibDebugPortProtocol/DebugLib.c       | 334 +++++++++++++++++++++
+ .../UefiDebugLibDebugPortProtocol.inf              |  57 ++++
+ .../UefiDebugLibDebugPortProtocol.uni              | Bin 0 -> 1812 bytes
+ MdePkg/MdePkg.dsc                                  |   1 +
+ 4 files changed, 392 insertions(+)
+ create mode 100644 MdePkg/Library/UefiDebugLibDebugPortProtocol/DebugLib.c
+ create mode 100644 MdePkg/Library/UefiDebugLibDebugPortProtocol/UefiDebugLibDebugPortProtocol.inf
+ create mode 100644 MdePkg/Library/UefiDebugLibDebugPortProtocol/UefiDebugLibDebugPortProtocol.uni
+
+diff --git a/MdePkg/Library/UefiDebugLibDebugPortProtocol/DebugLib.c b/MdePkg/Library/UefiDebugLibDebugPortProtocol/DebugLib.c
+new file mode 100644
+index 0000000..cc3bf65
+--- /dev/null
++++ b/MdePkg/Library/UefiDebugLibDebugPortProtocol/DebugLib.c
+@@ -0,0 +1,334 @@
++/** @file
++  UEFI Debug Library that sends messages to EFI_DEBUGPORT_PROTOCOL.Write.
++
++  Copyright (c) 2015, Intel Corporation. All rights reserved.<BR>
++  This program and the accompanying materials
++  are licensed and made available under the terms and conditions of the BSD License
++  which accompanies this distribution.  The full text of the license may be found at
++  http://opensource.org/licenses/bsd-license.php.
++
++  THE PROGRAM IS DISTRIBUTED UNDER THE BSD LICENSE ON AN "AS IS" BASIS,
++  WITHOUT WARRANTIES OR REPRESENTATIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED.
++
++**/
++
++#include <Uefi.h>
++
++#include <Library/DebugLib.h>
++#include <Library/UefiBootServicesTableLib.h>
++#include <Library/PrintLib.h>
++#include <Library/PcdLib.h>
++#include <Library/BaseLib.h>
++#include <Library/BaseMemoryLib.h>
++#include <Library/DebugPrintErrorLevelLib.h>
++
++#include <Protocol/DebugPort.h>
++
++//
++// Define the maximum debug and assert message length that this library supports
++//
++#define MAX_DEBUG_MESSAGE_LENGTH  0x100
++
++//
++// Define the timeout for EFI_DEBUGPORT_PROTOCOL.Write
++//
++#define WRITE_TIMEOUT 1000
++
++
++EFI_DEBUGPORT_PROTOCOL *mDebugPort = NULL;
++
++/**
++  Send message to DebugPort Protocol.
++
++  If mDebugPort is NULL, i.e. EFI_DEBUGPORT_PROTOCOL is not located,
++  EFI_DEBUGPORT_PROTOCOL is located first.
++  Then, Buffer is sent via EFI_DEBUGPORT_PROTOCOL.Write.
++
++  @param  Buffer         The message to be sent.
++  @param  BufferLength   The byte length of Buffer.
++
++**/
++VOID
++UefiDebugLibDebugPortProtocolWrite (
++  IN  CONST CHAR8  *Buffer,
++  IN        UINTN  BufferLength
++  )
++{
++  UINTN      Length;
++  EFI_STATUS Status;
++
++  //
++  // If mDebugPort is NULL, initialize first.
++  //
++  if (mDebugPort == NULL) {
++      Status = gBS->LocateProtocol (&gEfiDebugPortProtocolGuid, NULL, (VOID **)&mDebugPort);
++      if (EFI_ERROR (Status)) {
++          return;
++      }
++
++      mDebugPort->Reset (mDebugPort);
++  }
++
++  //
++  // EFI_DEBUGPORT_PROTOCOL.Write is called until all message is sent.
++  //
++  while (BufferLength > 0) {
++    Length = BufferLength;
++
++    Status = mDebugPort->Write (mDebugPort, WRITE_TIMEOUT, &Length, (VOID *) Buffer);
++
++    //
++    // Check Length to avoid buffer overrun, for just in case.
++    //
++    if (EFI_ERROR (Status) || BufferLength < Length) {
++      break;
++    }
++
++    Buffer += Length;
++    BufferLength -= Length;
++  }
++}
++
++/**
++  Prints a debug message to the debug output device if the specified error level is enabled.
++
++  If any bit in ErrorLevel is also set in DebugPrintErrorLevelLib function 
++  GetDebugPrintErrorLevel (), then print the message specified by Format and the 
++  associated variable argument list to the debug output device.
++
++  If Format is NULL, then ASSERT().
++
++  @param  ErrorLevel  The error level of the debug message.
++  @param  Format      Format string for the debug message to print.
++  @param  ...         A variable argument list whose contents are accessed 
++                      based on the format string specified by Format.
++
++**/
++VOID
++EFIAPI
++DebugPrint (
++  IN  UINTN        ErrorLevel,
++  IN  CONST CHAR8  *Format,
++  ...
++  )
++{
++  CHAR8      Buffer[MAX_DEBUG_MESSAGE_LENGTH];
++  VA_LIST    Marker;
++
++  //
++  // If Format is NULL, then ASSERT().
++  //
++  ASSERT (Format != NULL);
++
++  //
++  // Check driver debug mask value and global mask
++  //
++  if ((ErrorLevel & GetDebugPrintErrorLevel ()) == 0) {
++    return;
++  }
++
++  //
++  // Convert the DEBUG() message to an ASCII String
++  //
++  VA_START (Marker, Format);
++  AsciiVSPrint (Buffer, sizeof (Buffer), Format, Marker);
++  VA_END (Marker);
++
++  //
++  // Send the print string to EFI_DEBUGPORT_PROTOCOL.Write.
++  //
++  UefiDebugLibDebugPortProtocolWrite (Buffer, AsciiStrLen (Buffer));
++}
++
++
++/**
++  Prints an assert message containing a filename, line number, and description.  
++  This may be followed by a breakpoint or a dead loop.
++
++  Print a message of the form "ASSERT <FileName>(<LineNumber>): <Description>\n"
++  to the debug output device.  If DEBUG_PROPERTY_ASSERT_BREAKPOINT_ENABLED bit of 
++  PcdDebugProperyMask is set then CpuBreakpoint() is called. Otherwise, if 
++  DEBUG_PROPERTY_ASSERT_DEADLOOP_ENABLED bit of PcdDebugProperyMask is set then 
++  CpuDeadLoop() is called.  If neither of these bits are set, then this function 
++  returns immediately after the message is printed to the debug output device.
++  DebugAssert() must actively prevent recursion.  If DebugAssert() is called while
++  processing another DebugAssert(), then DebugAssert() must return immediately.
++
++  If FileName is NULL, then a <FileName> string of "(NULL) Filename" is printed.
++  If Description is NULL, then a <Description> string of "(NULL) Description" is printed.
++
++  @param  FileName     The pointer to the name of the source file that generated 
++                       the assert condition.
++  @param  LineNumber   The line number in the source file that generated the 
++                       assert condition
++  @param  Description  The pointer to the description of the assert condition.
++
++**/
++VOID
++EFIAPI
++DebugAssert (
++  IN CONST CHAR8  *FileName,
++  IN UINTN        LineNumber,
++  IN CONST CHAR8  *Description
++  )
++{
++  CHAR8  Buffer[MAX_DEBUG_MESSAGE_LENGTH];
++
++  //
++  // Generate the ASSERT() message in ASCII format
++  //
++  AsciiSPrint (
++    Buffer, 
++    sizeof (Buffer), 
++    "ASSERT %a(%d): %a\n", 
++    FileName, 
++    LineNumber, 
++    Description
++    );
++
++  //
++  // Send the print string to EFI_DEBUGPORT_PROTOCOL.Write.
++  //
++  UefiDebugLibDebugPortProtocolWrite (Buffer, AsciiStrLen (Buffer));
++
++  //
++  // Generate a Breakpoint, DeadLoop, or NOP based on PCD settings
++  //
++  if ((PcdGet8(PcdDebugPropertyMask) & DEBUG_PROPERTY_ASSERT_BREAKPOINT_ENABLED) != 0) {
++    CpuBreakpoint ();
++  } else if ((PcdGet8(PcdDebugPropertyMask) & DEBUG_PROPERTY_ASSERT_DEADLOOP_ENABLED) != 0) {
++    CpuDeadLoop ();
++  }
++}
++
++
++/**
++  Fills a target buffer with PcdDebugClearMemoryValue, and returns the target buffer.
++
++  This function fills Length bytes of Buffer with the value specified by 
++  PcdDebugClearMemoryValue, and returns Buffer.
++
++  If Buffer is NULL, then ASSERT().
++  If Length is greater than (MAX_ADDRESS - Buffer + 1), then ASSERT(). 
++
++  @param   Buffer  The pointer to the target buffer to be filled with PcdDebugClearMemoryValue.
++  @param   Length  The number of bytes in Buffer to fill with zeros PcdDebugClearMemoryValue. 
++
++  @return  Buffer  The pointer to the target buffer filled with PcdDebugClearMemoryValue.
++
++**/
++VOID *
++EFIAPI
++DebugClearMemory (
++  OUT VOID  *Buffer,
++  IN UINTN  Length
++  )
++{
++  //
++  // If Buffer is NULL, then ASSERT().
++  //
++  ASSERT (Buffer != NULL);
++
++  //
++  // SetMem() checks for the the ASSERT() condition on Length and returns Buffer
++  //
++  return SetMem (Buffer, Length, PcdGet8(PcdDebugClearMemoryValue));
++}
++
++
++/**
++  Returns TRUE if ASSERT() macros are enabled.
++
++  This function returns TRUE if the DEBUG_PROPERTY_DEBUG_ASSERT_ENABLED bit of 
++  PcdDebugProperyMask is set.  Otherwise FALSE is returned.
++
++  @retval  TRUE    The DEBUG_PROPERTY_DEBUG_ASSERT_ENABLED bit of PcdDebugProperyMask is set.
++  @retval  FALSE   The DEBUG_PROPERTY_DEBUG_ASSERT_ENABLED bit of PcdDebugProperyMask is clear.
++
++**/
++BOOLEAN
++EFIAPI
++DebugAssertEnabled (
++  VOID
++  )
++{
++  return (BOOLEAN) ((PcdGet8(PcdDebugPropertyMask) & DEBUG_PROPERTY_DEBUG_ASSERT_ENABLED) != 0);
++}
++
++
++/**  
++  Returns TRUE if DEBUG() macros are enabled.
++
++  This function returns TRUE if the DEBUG_PROPERTY_DEBUG_PRINT_ENABLED bit of 
++  PcdDebugProperyMask is set.  Otherwise FALSE is returned.
++
++  @retval  TRUE    The DEBUG_PROPERTY_DEBUG_PRINT_ENABLED bit of PcdDebugProperyMask is set.
++  @retval  FALSE   The DEBUG_PROPERTY_DEBUG_PRINT_ENABLED bit of PcdDebugProperyMask is clear.
++
++**/
++BOOLEAN
++EFIAPI
++DebugPrintEnabled (
++  VOID
++  )
++{
++  return (BOOLEAN) ((PcdGet8(PcdDebugPropertyMask) & DEBUG_PROPERTY_DEBUG_PRINT_ENABLED) != 0);
++}
++
++
++/**  
++  Returns TRUE if DEBUG_CODE() macros are enabled.
++
++  This function returns TRUE if the DEBUG_PROPERTY_DEBUG_CODE_ENABLED bit of 
++  PcdDebugProperyMask is set.  Otherwise FALSE is returned.
++
++  @retval  TRUE    The DEBUG_PROPERTY_DEBUG_CODE_ENABLED bit of PcdDebugProperyMask is set.
++  @retval  FALSE   The DEBUG_PROPERTY_DEBUG_CODE_ENABLED bit of PcdDebugProperyMask is clear.
++
++**/
++BOOLEAN
++EFIAPI
++DebugCodeEnabled (
++  VOID
++  )
++{
++  return (BOOLEAN) ((PcdGet8(PcdDebugPropertyMask) & DEBUG_PROPERTY_DEBUG_CODE_ENABLED) != 0);
++}
++
++
++/**  
++  Returns TRUE if DEBUG_CLEAR_MEMORY() macro is enabled.
++
++  This function returns TRUE if the DEBUG_PROPERTY_CLEAR_MEMORY_ENABLED bit of 
++  PcdDebugProperyMask is set.  Otherwise FALSE is returned.
++
++  @retval  TRUE    The DEBUG_PROPERTY_CLEAR_MEMORY_ENABLED bit of PcdDebugProperyMask is set.
++  @retval  FALSE   The DEBUG_PROPERTY_CLEAR_MEMORY_ENABLED bit of PcdDebugProperyMask is clear.
++
++**/
++BOOLEAN
++EFIAPI
++DebugClearMemoryEnabled (
++  VOID
++  )
++{
++  return (BOOLEAN) ((PcdGet8(PcdDebugPropertyMask) & DEBUG_PROPERTY_CLEAR_MEMORY_ENABLED) != 0);
++}
++
++/**
++  Returns TRUE if any one of the bit is set both in ErrorLevel and PcdFixedDebugPrintErrorLevel.
++
++  This function compares the bit mask of ErrorLevel and PcdFixedDebugPrintErrorLevel.
++
++  @retval  TRUE    Current ErrorLevel is supported.
++  @retval  FALSE   Current ErrorLevel is not supported.
++
++**/
++BOOLEAN
++EFIAPI
++DebugPrintLevelEnabled (
++  IN  CONST UINTN        ErrorLevel
++  )
++{
++  return (BOOLEAN) ((ErrorLevel & PcdGet32(PcdFixedDebugPrintErrorLevel)) != 0);
++}
+diff --git a/MdePkg/Library/UefiDebugLibDebugPortProtocol/UefiDebugLibDebugPortProtocol.inf b/MdePkg/Library/UefiDebugLibDebugPortProtocol/UefiDebugLibDebugPortProtocol.inf
+new file mode 100644
+index 0000000..11c7e81
+--- /dev/null
++++ b/MdePkg/Library/UefiDebugLibDebugPortProtocol/UefiDebugLibDebugPortProtocol.inf
+@@ -0,0 +1,57 @@
++## @file
++#  Instance of Debug Library using EFI_DEBUGPORT_PROTOCOL.
++#
++#  Debug Lib that sends messages to EFI_DEBUGPORT_PROTOCOL.Write.
++#
++#  Copyright (c) 2015, Intel Corporation. All rights reserved.<BR>
++#
++#  This program and the accompanying materials
++#  are licensed and made available under the terms and conditions of the BSD License
++#  which accompanies this distribution. The full text of the license may be found at
++#  http://opensource.org/licenses/bsd-license.php.
++#  THE PROGRAM IS DISTRIBUTED UNDER THE BSD LICENSE ON AN "AS IS" BASIS,
++#  WITHOUT WARRANTIES OR REPRESENTATIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED.
++#
++#
++##
++
++[Defines]
++  INF_VERSION                    = 0x00010005
++  BASE_NAME                      = UefiDebugLibDebugPortProtocol
++  MODULE_UNI_FILE                = UefiDebugLibDebugPortProtocol.uni
++  FILE_GUID                      = 102287b4-6b12-4D41-91e1-ebee1f3aa614
++  MODULE_TYPE                    = UEFI_DRIVER
++  VERSION_STRING                 = 1.0
++  LIBRARY_CLASS                  = DebugLib|DXE_CORE DXE_DRIVER DXE_RUNTIME_DRIVER DXE_SAL_DRIVER DXE_SMM_DRIVER UEFI_APPLICATION UEFI_DRIVER 
++
++
++#
++#  VALID_ARCHITECTURES           = IA32 X64 IPF EBC
++#
++
++
++[Sources]
++  DebugLib.c
++
++
++
++[Packages]
++  MdePkg/MdePkg.dec
++
++
++[LibraryClasses]
++  BaseMemoryLib
++  BaseLib
++  PcdLib
++  PrintLib
++  UefiBootServicesTableLib
++  DebugPrintErrorLevelLib
++
++[Protocols]
++  gEfiDebugPortProtocolGuid                     ## UNDEFINED
++
++[Pcd]
++  gEfiMdePkgTokenSpaceGuid.PcdDebugClearMemoryValue        ## SOMETIMES_CONSUMES
++  gEfiMdePkgTokenSpaceGuid.PcdDebugPropertyMask            ## CONSUMES
++  gEfiMdePkgTokenSpaceGuid.PcdFixedDebugPrintErrorLevel    ## CONSUMES
++
+diff --git a/MdePkg/Library/UefiDebugLibDebugPortProtocol/UefiDebugLibDebugPortProtocol.uni b/MdePkg/Library/UefiDebugLibDebugPortProtocol/UefiDebugLibDebugPortProtocol.uni
+new file mode 100644
+index 0000000000000000000000000000000000000000..83051cace477ca2941bd5523c2ea7ed35ab472ef
+GIT binary patch
+literal 1812
+zcmc(fPj3@35XI+=#CNdL3!pXuBrXUcl6G5GwB0D#C~&Gaf10k;B-JJ@^vf51&rWtj
+z8U$QGE3e1)_|2Q~v%fzytYMD!g3s9pyR_V{ZER2N3A0*@ZDtEwT1G!)#n~J$XGhor
+zyR`}SDZ2(%;8WN=<6Cy*_-ie)V=yl8kE~@qJF&JU*0GeiHhqGX*dguI>Sf$2{^K|f
+zHdn-2g1&&o%trLirq~O<jJUGoH~(t}eR9azIo`?U5X2jDl+Oef;_!^RJg0wcFYT4R
+zv3+b+O&HhM+EcJgf3eQ7W}rK3vM!GbO{@#geoTLdHNx{9mFw919o0$Uko#P3@Snp;
+zF{YsCyhik@l};^#<q(f4Otf~-zHmZQ#^Nd#8GIIH9PJVt$87FTUs@2S3SYZNs|a`4
+z(ocpOq#`LnEQDP#39+W0^_r!a$y1dN^-(2)($*QYtc!|*+N8w5rBcdQUyC9C$Jyri
+z2Su#wrC8FnvX+k5adj@Ls@PvLA5KV|zu~jZ>F2sggPFepgVp}|ssduP+^DORv*aY+
+z`dcPVg?!{+_)6EwzTi9?TeV*>Gl2QX4z^b6pj^?aTck`ra_`*grk$Xorkyd4sip3)
+z`jpw&-^~<XRk&y8{=Rmw*9cYhV-y|X(e=m)mXxf2jb6Ayt<ksqSfl-o-21ExH6c!l
+zS0AsAXLimw22~h(BOERA+%>0|DZcVi)ZlfDm!f~6|HO)z>jp-vD3QmB>~o1zp~uvs
+z&AX$RM;mpkG^Ka3;kj#0ZLd^KxILkM7a%2I^gxSv*_z}YR+>~xS^nzV;}mrZCY*eD
+rxt!O+0a#*MgWbP-foo;1f0n0S^)4AoLGAKncIEo}JpboQU*-J+Kfe{x
+
+literal 0
+HcmV?d00001
+
+diff --git a/MdePkg/MdePkg.dsc b/MdePkg/MdePkg.dsc
+index 89fc630..00c46d4 100644
+--- a/MdePkg/MdePkg.dsc
++++ b/MdePkg/MdePkg.dsc
+@@ -114,6 +114,7 @@
+   MdePkg/Library/UefiApplicationEntryPoint/UefiApplicationEntryPoint.inf
+   MdePkg/Library/UefiBootServicesTableLib/UefiBootServicesTableLib.inf
+   MdePkg/Library/UefiDebugLibConOut/UefiDebugLibConOut.inf
++  MdePkg/Library/UefiDebugLibDebugPortProtocol/UefiDebugLibDebugPortProtocol.inf
+   MdePkg/Library/UefiDebugLibStdErr/UefiDebugLibStdErr.inf
+   MdePkg/Library/UefiDevicePathLib/UefiDevicePathLib.inf
+   MdePkg/Library/UefiDevicePathLib/UefiDevicePathLibOptionalDevicePathProtocol.inf
+-- 
+1.9.4.msysgit.0
+
