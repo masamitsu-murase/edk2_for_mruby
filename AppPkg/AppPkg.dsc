@@ -107,10 +107,10 @@
 [Components]
 
 #### Sample Applications.
-  AppPkg/Applications/Hello/Hello.inf        # No LibC includes or functions.
-  AppPkg/Applications/Main/Main.inf          # Simple invocation. No other LibC functions.
-  AppPkg/Applications/Enquire/Enquire.inf    #
-  AppPkg/Applications/ArithChk/ArithChk.inf  #
+#  AppPkg/Applications/Hello/Hello.inf        # No LibC includes or functions.
+#  AppPkg/Applications/Main/Main.inf          # Simple invocation. No other LibC functions.
+#  AppPkg/Applications/Enquire/Enquire.inf    #
+#  AppPkg/Applications/ArithChk/ArithChk.inf  #
 
 #### A simple fuzzer for OrderedCollectionLib, in particular for
 #### BaseOrderedCollectionRedBlackTreeLib.
@@ -130,7 +130,7 @@
 #  AppPkg/Applications/Python/PythonCore.inf
 
 #### Un-comment the following line to build Python 2.7.10.
-# AppPkg/Applications/Python/Python-2.7.10/Python2710.inf
+ AppPkg/Applications/Python/Python-2.7.10/Python2710.inf
 
 #### Un-comment the following line to build Lua.
 #  AppPkg/Applications/Lua/Lua.inf

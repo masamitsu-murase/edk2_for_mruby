@@ -483,8 +483,15 @@ buffered_close(buffered *self, PyObject *args)
     res = PyObject_CallMethodObjArgs(self->raw, _PyIO_str_close, NULL);
 
     if (exc != NULL) {
-        _PyErr_ReplaceException(exc, val, tb);
-        Py_CLEAR(res);
+        if (res != NULL) {
+            Py_CLEAR(res);
+            PyErr_Restore(exc, val, tb);
+        }
+        else {
+            Py_DECREF(exc);
+            Py_XDECREF(val);
+            Py_XDECREF(tb);
+        }
     }
 
 end:
@@ -1215,7 +1222,7 @@ buffered_repr(buffered *self)
 
     nameobj = PyObject_GetAttrString((PyObject *) self, "name");
     if (nameobj == NULL) {
-        if (PyErr_ExceptionMatches(PyExc_Exception))
+        if (PyErr_ExceptionMatches(PyExc_AttributeError))
             PyErr_Clear();
         else
             return NULL;
@@ -2193,25 +2200,12 @@ bufferedrwpair_writable(rwpair *self, PyObject *args)
 static PyObject *
 bufferedrwpair_close(rwpair *self, PyObject *args)
 {
-    PyObject *exc = NULL, *val, *tb;
     PyObject *ret = _forward_call(self->writer, "close", args);
     if (ret == NULL)
-        PyErr_Fetch(&exc, &val, &tb);
-    else
-        Py_DECREF(ret);
-    ret = _forward_call(self->reader, "close", args);
-    if (exc != NULL) {
-        if (ret != NULL) {
-            Py_CLEAR(ret);
-            PyErr_Restore(exc, val, tb);
-        }
-        else {
-            Py_DECREF(exc);
-            Py_XDECREF(val);
-            Py_XDECREF(tb);
-        }
-    }
-    return ret;
+        return NULL;
+    Py_DECREF(ret);
+
+    return _forward_call(self->reader, "close", args);
 }
 
 static PyObject *

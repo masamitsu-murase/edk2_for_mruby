@@ -461,8 +461,6 @@ class ModuleFinder:
         fp, buf, stuff = self.find_module("__init__", m.__path__)
         self.load_module(fqname, fp, buf, stuff)
         self.msgout(2, "load_package ->", m)
-        if fp:
-            fp.close()
         return m
 
     def add_module(self, fqname):

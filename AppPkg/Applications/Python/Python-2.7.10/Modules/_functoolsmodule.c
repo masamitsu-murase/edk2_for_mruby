@@ -132,12 +132,16 @@ partial_new(PyTypeObject *type, PyObject *args, PyObject *kw)
         Py_DECREF(pto);
         return NULL;
     }
-    pto->kw = (kw != NULL) ? PyDict_Copy(kw) : PyDict_New();
-    if (pto->kw == NULL) {
-        Py_DECREF(pto);
-        return NULL;
+    if (kw != NULL) {
+        pto->kw = PyDict_Copy(kw);
+        if (pto->kw == NULL) {
+            Py_DECREF(pto);
+            return NULL;
+        }
+    } else {
+        pto->kw = Py_None;
+        Py_INCREF(Py_None);
     }
-
 
     pto->weakreflist = NULL;
     pto->dict = NULL;
