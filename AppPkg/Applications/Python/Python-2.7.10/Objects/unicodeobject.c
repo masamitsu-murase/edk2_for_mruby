@@ -8397,7 +8397,7 @@ PyObject *PyUnicode_Format(PyObject *format,
             int isnumok;
             PyObject *v = NULL;
             PyObject *temp = NULL;
-            Py_UNICODE *pbuf;
+            Py_UNICODE *pbuf = NULL;
             Py_UNICODE sign;
             Py_ssize_t len;
             Py_UNICODE formatbuf[FORMATBUFLEN]; /* For format{int,char}() */

@@ -4285,7 +4285,7 @@ PyString_Format(PyObject *format, PyObject *args)
             int isnumok;
             PyObject *v = NULL;
             PyObject *temp = NULL;
-            char *pbuf;
+            char *pbuf = NULL;
             int sign;
             Py_ssize_t len;
             char formatbuf[FORMATBUFLEN];
