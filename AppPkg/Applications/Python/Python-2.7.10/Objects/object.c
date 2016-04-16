@@ -470,7 +470,7 @@ PyObject_Str(PyObject *v)
 PyObject *
 PyObject_Unicode(PyObject *v)
 {
-    PyObject *res = NULL;
+    PyObject *res;
     PyObject *func;
     PyObject *str;
     int unicode_method_found = 0;

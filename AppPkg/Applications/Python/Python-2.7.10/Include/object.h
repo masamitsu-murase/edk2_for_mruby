@@ -4,6 +4,9 @@
 extern "C" {
 #endif
 
+#ifdef STACKLESS
+#include "core/slp_exttype.h"
+#endif
 
 /* Object and type object interface */
 
@@ -161,6 +164,7 @@ typedef Py_ssize_t (*charbufferproc)(PyObject *, Py_ssize_t, char **);
 
 
 /* Py3k buffer interface */
+
 typedef struct bufferinfo {
     void *buf;
     PyObject *obj;        /* owned reference */
@@ -290,7 +294,22 @@ typedef struct {
     lenfunc mp_length;
     binaryfunc mp_subscript;
     objobjargproc mp_ass_subscript;
+#ifdef STACKLESS
+    /* we put the stackless method flags in here.  This keeps the basic PyTypeObject size
+     * constants and thus helps with compatibility with external types
+     */
+    slp_methodflags slpflags;
+#endif
 } PyMappingMethods;
+
+#ifdef STACKLESS
+/* we need the original object for inclusion in the PyHeapTypeObject */
+typedef struct {
+    lenfunc mp_length;
+    binaryfunc mp_subscript;
+    objobjargproc mp_ass_subscript;
+} PyMappingMethods_Orig;
+#endif
 
 typedef struct {
     readbufferproc bf_getreadbuffer;
@@ -410,14 +429,17 @@ typedef struct _typeobject {
 #endif
 } PyTypeObject;
 
-
 /* The *real* layout of a type object when allocated on the heap */
 typedef struct _heaptypeobject {
     /* Note: there's a dependency on the order of these members
        in slotptr() in typeobject.c . */
     PyTypeObject ht_type;
     PyNumberMethods as_number;
+#ifdef STACKLESS
+    PyMappingMethods_Orig as_mapping;
+#else
     PyMappingMethods as_mapping;
+#endif
     PySequenceMethods as_sequence; /* as_sequence comes after as_mapping,
                                       so that the mapping wins when both
                                       the mapping and the sequence define
@@ -431,7 +453,6 @@ typedef struct _heaptypeobject {
 /* access macro to the members which are floating "behind" the object */
 #define PyHeapType_GET_MEMBERS(etype) \
     ((PyMemberDef *)(((char *)etype) + Py_TYPE(etype)->tp_basicsize))
-
 
 /* Generic type check */
 PyAPI_FUNC(int) PyType_IsSubtype(PyTypeObject *, PyTypeObject *);
@@ -607,7 +628,8 @@ manually remove this flag though!
 
 /* These two bits are preserved for Stackless Python, next after this is 17 */
 #ifdef STACKLESS
-#define Py_TPFLAGS_HAVE_STACKLESS_EXTENSION (3L<<15)
+#define Py_TPFLAGS_HAVE_STACKLESS_CALL (1L<<15)
+#define Py_TPFLAGS_HAVE_STACKLESS_EXTENSION (1L<<16)
 #else
 #define Py_TPFLAGS_HAVE_STACKLESS_EXTENSION 0
 #endif
@@ -644,7 +666,6 @@ manually remove this flag though!
                  Py_TPFLAGS_HAVE_WEAKREFS | \
                  Py_TPFLAGS_HAVE_ITER | \
                  Py_TPFLAGS_HAVE_CLASS | \
-                 Py_TPFLAGS_HAVE_STACKLESS_EXTENSION | \
                  Py_TPFLAGS_HAVE_INDEX | \
                  0)
 #define Py_TPFLAGS_DEFAULT_CORE (Py_TPFLAGS_DEFAULT_EXTERNAL | \

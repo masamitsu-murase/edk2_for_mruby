@@ -925,7 +925,7 @@ PyObject_ClearWeakRefs(PyObject *object)
         PyWeakReference *current = *list;
         Py_ssize_t count = _PyWeakref_GetWeakrefCount(current);
         int restore_error = PyErr_Occurred() ? 1 : 0;
-        PyObject *err_type = NULL, *err_value = NULL, *err_tb = NULL;
+        PyObject *err_type, *err_value, *err_tb;
 
         if (restore_error)
             PyErr_Fetch(&err_type, &err_value, &err_tb);
