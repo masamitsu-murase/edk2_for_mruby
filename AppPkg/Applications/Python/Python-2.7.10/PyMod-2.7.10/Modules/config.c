@@ -86,42 +86,42 @@ extern void init_codecs_tw(void);
 
 struct _inittab _PyImport_Inittab[] = {
 
-    //{"_ast", init_ast},
+    {"_ast", init_ast},
     //{"_bisect", init_bisect},               /* A fast version of bisect.py */
-    //{"_csv", init_csv},
+    {"_csv", init_csv},
     //{"_heapq", init_heapq},                 /* A fast version of heapq.py */
     //{"_io", init_io},
-    //{"_json", init_json},
-    //{"_md5", init_md5},
-    //{"_sha", init_sha},
-    //{"_sha256", init_sha256},
-    //{"_sha512", init_sha512},
+    {"_json", init_json},
+    {"_md5", init_md5},
+    {"_sha", init_sha},
+    {"_sha256", init_sha256},
+    {"_sha512", init_sha512},
     //{"_socket", init_socket},
-    //{"_symtable", init_symtable},
+    {"_symtable", init_symtable},
 
-    //{"array", initarray},
-    //{"cmath", initcmath},
+    {"array", initarray},
+    {"cmath", initcmath},
     //{"cPickle", initcPickle},
-    //{"datetime", initdatetime},
+    {"datetime", initdatetime},
     //{"future_builtins", initfuture_builtins},
-    //{"parser", initparser},
+    {"parser", initparser},
     //{"pyexpat", initpyexpat},
     //{"select", initselect},
     //{"signal", initsignal},
     //{"strop", initstrop},                   /* redefines some string operations that are 100-1000 times faster */
-    //{"unicodedata", initunicodedata},
+    {"unicodedata", initunicodedata},
     //{"xxsubtype", initxxsubtype},
     //{"zipimport", initzipimport},
-    //{"zlib", initzlib},
+    {"zlib", initzlib},
 
     /* CJK codecs */
-    //{"_multibytecodec", init_multibytecodec},
-    //{"_codecs_cn", init_codecs_cn},
-    //{"_codecs_hk", init_codecs_hk},
-    //{"_codecs_iso2022", init_codecs_iso2022},
-    //{"_codecs_jp", init_codecs_jp},
-    //{"_codecs_kr", init_codecs_kr},
-    //{"_codecs_tw", init_codecs_tw},
+    {"_multibytecodec", init_multibytecodec},
+    {"_codecs_cn", init_codecs_cn},
+    {"_codecs_hk", init_codecs_hk},
+    {"_codecs_iso2022", init_codecs_iso2022},
+    {"_codecs_jp", init_codecs_jp},
+    {"_codecs_kr", init_codecs_kr},
+    {"_codecs_tw", init_codecs_tw},
 
 #ifdef WITH_THREAD
     {"thread", initthread},
