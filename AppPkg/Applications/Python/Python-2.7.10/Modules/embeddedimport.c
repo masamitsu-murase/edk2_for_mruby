@@ -96,15 +96,29 @@ construct_filedata(EmbeddedImporter *self)
     return 0;
 }
 
+static void
+normalize_path(char *str)
+{
+#ifdef ALTSEP
+    while (*str) {
+        if (*str == ALTSEP) {
+            *str = SEP;
+        }
+        str++;
+    }
+#endif
+}
+
 static int
 embeddedimporter_init(EmbeddedImporter *self, PyObject *args, PyObject *kwds)
 {
     char *path;
-    char prefix[MAXPATHLEN + 2];
+    char normalized_path[MAXPATHLEN + 2];
     char program_full_path[MAXPATHLEN + 1];
     size_t len;
 
     strcpy(program_full_path, Py_GetProgramFullPath());
+    normalize_path(program_full_path);
     len = strlen(program_full_path);
 
     if (!_PyArg_NoKeywords("embeddedimporter()", kwds)) {
@@ -115,13 +129,18 @@ embeddedimporter_init(EmbeddedImporter *self, PyObject *args, PyObject *kwds)
         return -1;
     }
 
-    if (strncmp(path, program_full_path, len) != 0 || (path[len] != '\0' && path[len] != SEP)) {
+    strcpy(normalized_path, path);
+    normalize_path(normalized_path);
+
+    if (strncmp(normalized_path, program_full_path, len) != 0 || (normalized_path[len] != '\0' && normalized_path[len] != SEP)) {
         PyErr_SetString(EmbeddedImportError, "not a executable file");
         return -1;
     }
 
-    if (path[len] == SEP) {
+    if (normalized_path[len] == SEP) {
         char *p;
+        char prefix[MAXPATHLEN + 2];
+
         strcpy(prefix, path + len + 1);
         p = prefix;
         while (*p) {
@@ -505,6 +524,7 @@ PyMODINIT_FUNC
 initembeddedimport(void)
 {
     PyObject *mod, *path, *fullpath;
+    char normalized_path[MAXPATHLEN + 2];
 
     if (PyType_Ready(&EmbeddedImporter_Type) < 0) {
         return;
@@ -541,7 +561,10 @@ initembeddedimport(void)
         return;
     }
 
-    fullpath = PyString_FromString(Py_GetProgramFullPath());
+    strcpy(normalized_path, Py_GetProgramFullPath());
+    normalize_path(normalized_path);
+
+    fullpath = PyString_FromString(normalized_path);
     if (fullpath == NULL) {
         return;
     }
