@@ -368,7 +368,8 @@ Py_Main(int argc, char **argv)
             break;
 
         case 'B':
-            Py_DontWriteBytecodeFlag++;
+//            Py_DontWriteBytecodeFlag++;
+            Py_DontWriteBytecodeFlag--;
             break;
 
         case 's':
