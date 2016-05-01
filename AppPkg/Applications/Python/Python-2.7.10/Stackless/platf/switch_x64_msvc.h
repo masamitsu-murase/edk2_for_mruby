@@ -31,6 +31,33 @@
 #define EXTERNAL_ASM
 
 #ifdef SLP_EVAL
+
+#define STACK_MAGIC 0
+
+#pragma optimize("", off)
+
+#pragma warning(disable:4731) /* disable ebp modification warning */
+static int
+slp_switch(void)
+{
+    register int *stackref, stsizediff;
+    __asm mov stackref, esp;
+    /* modify EBX, ESI and EDI in order to get them preserved */
+    __asm mov ebx, ebx;
+    __asm xchg esi, edi;
+    {
+        SLP_SAVE_STATE(stackref, stsizediff);
+        __asm {
+        mov     eax, stsizediff
+        add     esp, eax
+        add     ebp, eax
+        }
+        SLP_RESTORE_STATE();
+        return 0;
+    }
+#pragma warning(default:4731)
+}
+
 /* This always uses the external masm assembly file. */
 #endif
 
