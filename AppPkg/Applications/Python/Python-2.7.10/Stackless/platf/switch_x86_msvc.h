@@ -31,9 +31,36 @@
 #ifdef Yield
 #undef Yield /* remove definition from Python_ast.h to avoid conflict */
 #endif
-#include <windows.h>
+//#include <windows.h>
 #endif
 #define _SEH32
+#define DWORD unsigned long
+
+#ifndef _HOGE_
+#define _HOGE_
+
+typedef void *PVOID;
+
+typedef struct {
+    void *ExceptionList;
+    PVOID StackBase;
+    PVOID StackLimit;
+    PVOID SubSystemTib;
+    union {
+        PVOID FiberData;
+        DWORD Version;
+    } Hoge;
+    PVOID ArbitraryUserPointer;
+//    struct _NT_TIB *Self;
+    void *Self;
+} NT_TIB;
+typedef NT_TIB *PNT_TIB;
+
+
+#define FIELD_OFFSET(type, field) \
+  ((char*)&(((type*)NULL)->field) - (char*)NULL)
+#endif
+
 
 #define alloca _alloca
 
@@ -78,6 +105,7 @@ slp_switch(void)
  */
 
 /* we have IsBadReadPtr available, so we can peek at objects */
+#if 0
 #define STACKLESS_SPY
 
 #ifdef IMPLEMENT_STACKLESSMODULE
@@ -91,4 +119,5 @@ static int IS_ON_STACK(void*p)
     return (int)p >= stackbase && (int)p < stackbase + 0x00100000;
 }
 
+#endif
 #endif

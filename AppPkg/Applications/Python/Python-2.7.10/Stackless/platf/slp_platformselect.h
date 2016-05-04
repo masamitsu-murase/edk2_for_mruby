@@ -30,7 +30,8 @@
 #include "switch_ps3_SNTools.h" /* Sony PS3 */
 #endif
 
-#include "switch_x64_msvc.h" /* MS Visual Studio on X64 */
+//#include "switch_x64_msvc.h" /* MS Visual Studio on X64 */
+#include "switch_x86_msvc.h" /* MS Visual Studio on X64 */
 
 /* default definitions if not defined in above files */
 
