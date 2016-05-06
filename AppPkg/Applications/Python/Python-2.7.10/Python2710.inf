@@ -159,6 +159,7 @@
   # Mandatory Modules -- These must always be built in.
   PyMod-$(PYTHON_VERSION)/Modules/config.c
   PyMod-$(PYTHON_VERSION)/Modules/edk2module.c
+  PyMod-$(PYTHON_VERSION)/Modules/edk2moduleex.c
   PyMod-$(PYTHON_VERSION)/Modules/errnomodule.c
   PyMod-$(PYTHON_VERSION)/Modules/getpath.c
   PyMod-$(PYTHON_VERSION)/Modules/main.c
