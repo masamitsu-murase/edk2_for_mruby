@@ -1,5 +1,5 @@
 ## @file
-# Python2710.inf
+# StacklessPython279.inf
 #
 #  Copyright (c) 2015, Daryl McDaniel. All rights reserved.<BR>
 #  Copyright (c) 2011-2012, Intel Corporation. All rights reserved.<BR>
@@ -15,13 +15,13 @@
 
 [Defines]
   INF_VERSION                 = 0x00010016
-  BASE_NAME                   = Python2710
-  FILE_GUID                   = F78285FD-121E-49f4-9716-44E307656586
+  BASE_NAME                   = StacklessPython279
+  FILE_GUID                   = 1007D33D-CD02-4129-8E62-030E03E516BA
   MODULE_TYPE                 = UEFI_APPLICATION
   VERSION_STRING              = 0.1
   ENTRY_POINT                 = ShellCEntryLib
 
-  DEFINE PYTHON_VERSION       = 2.7.10
+  DEFINE PYTHON_VERSION       = 2.7.9
 
 #
 #  VALID_ARCHITECTURES        = IA32 X64
@@ -189,6 +189,8 @@
   Modules/cPickle.c                    #
   Modules/cStringIO.c                  #
   Modules/datetimemodule.c             #
+  Modules/embeddedimport.c             #
+  Modules/embeddedimport_data.c        #
   Modules/future_builtins.c            #
   Modules/itertoolsmodule.c            #
   Modules/mathmodule.c                 #
@@ -251,8 +253,24 @@
   Modules/zlib/uncompr.c               #
   Modules/zlib/zutil.c                 #
 
+#Stackless
+  Stackless/core/cframeobject.c 
+  Stackless/core/slp_transfer.c 
+  Stackless/core/stackless_util.c 
+  Stackless/core/stacklesseval.c 
+  Stackless/module/channelobject.c 
+  Stackless/module/scheduling.c 
+  Stackless/module/stacklessmodule.c 
+  Stackless/module/taskletobject.c 
+  Stackless/pickling/prickelpit.c 
+  Stackless/pickling/safe_pickle.c 
+  Stackless/testbench/simwrapper.c 
+
+  Stackless/platf/switch_x64_masm.asm
+
 [BuildOptions]
    MSFT:*_*_IA32_CC_FLAGS         = /Oi- /wd4018 /wd4054 /wd4055 /wd4101 /wd4131 /wd4152 /wd4204 /wd4210 /wd4244 /wd4267 /wd4305 /wd4310 /wd4389 /wd4701 /wd4702 /wd4706 /I$(WORKSPACE)\AppPkg\Applications\Python\Python-2.7.10\Ia32 /I$(WORKSPACE)\AppPkg\Applications\Python\Python-2.7.10\Include /DHAVE_MEMMOVE /DUSE_PYEXPAT_CAPI /DXML_STATIC
-   MSFT:*_*_X64_CC_FLAGS          = /Oi- /wd4018 /wd4054 /wd4055 /wd4101 /wd4131 /wd4152 /wd4204 /wd4210 /wd4244 /wd4267 /wd4305 /wd4310 /wd4389 /wd4701 /wd4702 /wd4706 /I$(WORKSPACE)\AppPkg\Applications\Python\Python-2.7.10\X64 /I$(WORKSPACE)\AppPkg\Applications\Python\Python-2.7.10\Include /DHAVE_MEMMOVE /DUSE_PYEXPAT_CAPI /DXML_STATIC
+   MSFT:*_*_X64_CC_FLAGS          = /Oi- /wd4018 /wd4054 /wd4055 /wd4101 /wd4131 /wd4152 /wd4189 /wd4204 /wd4210 /wd4244 /wd4267 /wd4305 /wd4310 /wd4389 /wd4701 /wd4702 /wd4703 /wd4706 /I$(WORKSPACE)\AppPkg\Applications\Python\Python-2.7.10\Stackless /I$(WORKSPACE)\AppPkg\Applications\Python\Python-2.7.10\X64 /I$(WORKSPACE)\AppPkg\Applications\Python\Python-2.7.10\Include /DHAVE_MEMMOVE /DUSE_PYEXPAT_CAPI /DXML_STATIC /DSTACKLESS
     GCC:*_*_IA32_CC_FLAGS         = -fno-builtin -Wno-format -I$(WORKSPACE)/AppPkg/Applications/Python/Python-2.7.10/Ia32 -I$(WORKSPACE)/AppPkg/Applications/Python/Python-2.7.10/PyMod-2.7.10/Include -I$(WORKSPACE)/AppPkg/Applications/Python/Python-2.7.10/Include -DHAVE_MEMMOVE -DUSE_PYEXPAT_CAPI -DXML_STATIC
     GCC:*_*_X64_CC_FLAGS          = -Wno-format -I$(WORKSPACE)/AppPkg/Applications/Python/Python-2.7.10/X64 -I$(WORKSPACE)/AppPkg/Applications/Python/Python-2.7.10/PyMod-2.7.10/Include -I$(WORKSPACE)/AppPkg/Applications/Python/Python-2.7.10/Include -DHAVE_MEMMOVE -DUSE_PYEXPAT_CAPI -DXML_STATIC
+   MSFT:*_*_X64_DLINK_FLAGS = /STACK:2000000
