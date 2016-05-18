@@ -189,8 +189,6 @@
   Modules/cPickle.c                    #
   Modules/cStringIO.c                  #
   Modules/datetimemodule.c             #
-  Modules/embeddedimport.c             #
-  Modules/embeddedimport_data.c        #
   Modules/future_builtins.c            #
   Modules/itertoolsmodule.c            #
   Modules/mathmodule.c                 #

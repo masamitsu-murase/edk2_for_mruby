@@ -101,16 +101,16 @@ internal_close(fileio *self)
 static PyObject *
 fileio_close(fileio *self)
 {
-    PyObject *res;
-    res = PyObject_CallMethod((PyObject*)&PyRawIOBase_Type,
-                              "close", "O", self);
     if (!self->closefd) {
         self->fd = -1;
-        return res;
+        Py_RETURN_NONE;
     }
-    if (internal_close(self) < 0)
-        Py_CLEAR(res);
-    return res;
+    errno = internal_close(self);
+    if (errno < 0)
+        return NULL;
+
+    return PyObject_CallMethod((PyObject*)&PyRawIOBase_Type,
+                               "close", "O", self);
 }
 
 static PyObject *
@@ -217,7 +217,7 @@ fileio_init(PyObject *oself, PyObject *args, PyObject *kwds)
     if (fd < 0) {
         if (!PyErr_Occurred()) {
             PyErr_SetString(PyExc_ValueError,
-                            "negative file descriptor");
+                            "Negative filedescriptor");
             return -1;
         }
         PyErr_Clear();
@@ -949,7 +949,7 @@ fileio_isatty(fileio *self)
 PyDoc_STRVAR(fileio_doc,
 "file(name: str[, mode: str]) -> file IO object\n"
 "\n"
-"Open a file.  The mode can be 'r' (default), 'w' or 'a' for reading,\n"
+"Open a file.  The mode can be 'r', 'w' or 'a' for reading (default),\n"
 "writing or appending.  The file will be created if it doesn't exist\n"
 "when opened for writing or appending; it will be truncated when\n"
 "opened for writing.  Add a '+' to the mode to allow simultaneous\n"
@@ -972,22 +972,22 @@ PyDoc_STRVAR(write_doc,
 "write(b: bytes) -> int.  Write bytes b to file, return number written.\n"
 "\n"
 "Only makes one system call, so not all of the data may be written.\n"
-"The number of bytes actually written is returned.  In non-blocking mode,\n"
-"returns None if the write would block."
-);
+"The number of bytes actually written is returned.");
 
 PyDoc_STRVAR(fileno_doc,
-"fileno() -> int.  Return the underlying file descriptor (an integer).");
+"fileno() -> int. \"file descriptor\".\n"
+"\n"
+"This is needed for lower-level file interfaces, such the fcntl module.");
 
 PyDoc_STRVAR(seek_doc,
 "seek(offset: int[, whence: int]) -> int.  Move to new file position\n"
 "and return the file position.\n"
 "\n"
 "Argument offset is a byte count.  Optional argument whence defaults to\n"
-"SEEK_SET or 0 (offset from start of file, offset should be >= 0); other values\n"
-"are SEEK_CUR or 1 (move relative to current position, positive or negative),\n"
-"and SEEK_END or 2 (move relative to end of file, usually negative, although\n"
-"many platforms allow seeking beyond the end of a file).\n"
+"0 (offset from start of file, offset should be >= 0); other values are 1\n"
+"(move relative to current position, positive or negative), and 2 (move\n"
+"relative to end of file, usually negative, although many platforms allow\n"
+"seeking beyond the end of a file)."
 "\n"
 "Note that not all file objects are seekable.");
 
@@ -1001,10 +1001,7 @@ PyDoc_STRVAR(truncate_doc,
 #endif
 
 PyDoc_STRVAR(tell_doc,
-"tell() -> int.  Current file position.\n"
-"\n"
-"Can raise OSError for non seekable files."
-);
+"tell() -> int.  Current file position");
 
 PyDoc_STRVAR(readinto_doc,
 "readinto() -> Same as RawIOBase.readinto().");
@@ -1013,10 +1010,10 @@ PyDoc_STRVAR(close_doc,
 "close() -> None.  Close the file.\n"
 "\n"
 "A closed file cannot be used for further I/O operations.  close() may be\n"
-"called more than once without error.");
+"called more than once without error.  Changes the fileno to -1.");
 
 PyDoc_STRVAR(isatty_doc,
-"isatty() -> bool.  True if the file is connected to a TTY device.");
+"isatty() -> bool.  True if the file is connected to a tty device.");
 
 PyDoc_STRVAR(seekable_doc,
 "seekable() -> bool.  True if file supports random-access.");
@@ -1069,7 +1066,7 @@ get_mode(fileio *self, void *closure)
 static PyGetSetDef fileio_getsetlist[] = {
     {"closed", (getter)get_closed, NULL, "True if the file is closed"},
     {"closefd", (getter)get_closefd, NULL,
-        "True if the file descriptor will be closed by close()."},
+        "True if the file descriptor will be closed"},
     {"mode", (getter)get_mode, NULL, "String giving the file mode"},
     {NULL},
 };

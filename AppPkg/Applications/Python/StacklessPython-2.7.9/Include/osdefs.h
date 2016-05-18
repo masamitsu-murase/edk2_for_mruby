@@ -1,3 +1,17 @@
+/** @file
+  Operating system dependencies.
+
+  Copyright (c) 2015, Daryl McDaniel. All rights reserved.<BR>
+  Copyright (c) 2011 - 2012, Intel Corporation. All rights reserved.<BR>
+  This program and the accompanying materials are licensed and made available under
+  the terms and conditions of the BSD License that accompanies this distribution.
+  The full text of the license may be found at
+  http://opensource.org/licenses/bsd-license.
+
+  THE PROGRAM IS DISTRIBUTED UNDER THE BSD LICENSE ON AN "AS IS" BASIS,
+  WITHOUT WARRANTIES OR REPRESENTATIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED.
+**/
+
 #ifndef Py_OSDEFS_H
 #define Py_OSDEFS_H
 #ifdef __cplusplus
@@ -5,10 +19,8 @@ extern "C" {
 #endif
 
 
-/* Operating system dependencies */
-
 /* Mod by chrish: QNX has WATCOM, but isn't DOS */
-#if !defined(__QNX__)
+#if !defined(__QNX__) && !defined(UEFI_C_SOURCE)
 #if defined(MS_WINDOWS) || defined(__BORLANDC__) || defined(__WATCOMC__) || defined(__DJGPP__) || defined(PYOS_OS2)
 #if defined(PYOS_OS2) && defined(PYCC_GCC)
 #define MAXPATHLEN 260
@@ -33,15 +45,16 @@ extern "C" {
 /* Filename separator */
 #ifndef SEP
 #define SEP '/'
+#define ALTSEP  '\\'
 #endif
 
 /* Max pathname length */
 #ifdef __hpux
-#include <sys/param.h>
-#include <limits.h>
-#ifndef PATH_MAX
-#define PATH_MAX MAXPATHLEN
-#endif
+# include <sys/param.h>
+# include <limits.h>
+# ifndef PATH_MAX
+#   define PATH_MAX MAXPATHLEN
+# endif
 #endif
 
 #ifndef MAXPATHLEN
@@ -54,7 +67,12 @@ extern "C" {
 
 /* Search path entry delimiter */
 #ifndef DELIM
-#define DELIM ':'
+# ifdef  UEFI_C_SOURCE
+#   define DELIM      ';'
+#   define DELIM_STR  ";"
+# else
+#   define DELIM      ':'
+# endif
 #endif
 
 #ifdef __cplusplus

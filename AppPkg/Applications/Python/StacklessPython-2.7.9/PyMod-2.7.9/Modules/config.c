@@ -38,6 +38,11 @@ extern void init_hotshot(void);
 extern void initimp(void);
 extern void init_io(void);
 extern void inititertools(void);
+#ifdef STACKLESS
+extern void initstackless(void);
+#endif
+extern void init_fileio(void);
+extern void init_bytesio(void);
 extern void init_json(void);
 extern void init_lsprof(void);
 extern void initmath(void);

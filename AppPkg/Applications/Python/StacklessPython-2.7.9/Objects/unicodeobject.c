@@ -735,12 +735,15 @@ PyUnicode_FromFormatV(const char *format, va_list vargs)
       * objects once during step 3 and put the result in an array) */
     for (f = format; *f; f++) {
          if (*f == '%') {
-             f++;
-             while (*f && *f != '%' && !isalpha((unsigned)*f))
-                 f++;
-             if (!*f)
-                 break;
-             if (*f == 's' || *f=='S' || *f=='R')
+             if (*(f+1)=='%')
+                 continue;
+             if (*(f+1)=='S' || *(f+1)=='R')
+                 ++callcount;
+             while (isdigit((unsigned)*f))
+                 width = (width*10) + *f++ - '0';
+             while (*++f && *f != '%' && !isalpha((unsigned)*f))
+                 ;
+             if (*f == 's')
                  ++callcount;
          }
     }
@@ -757,16 +760,12 @@ PyUnicode_FromFormatV(const char *format, va_list vargs)
     /* step 3: figure out how large a buffer we need */
     for (f = format; *f; f++) {
         if (*f == '%') {
-            const char* p = f++;
+            const char* p = f;
             width = 0;
             while (isdigit((unsigned)*f))
                 width = (width*10) + *f++ - '0';
-            precision = 0;
-            if (*f == '.') {
-                f++;
-                while (isdigit((unsigned)*f))
-                    precision = (precision*10) + *f++ - '0';
-            }
+            while (*++f && *f != '%' && !isalpha((unsigned)*f))
+                ;
 
             /* skip the 'l' or 'z' in {%ld, %zd, %lu, %zu} since
              * they don't affect the amount of space we reserve.
@@ -801,8 +800,6 @@ PyUnicode_FromFormatV(const char *format, va_list vargs)
                 break;
             case 'd': case 'u': case 'i': case 'x':
                 (void) va_arg(count, int);
-                if (width < precision)
-                    width = precision;
                 /* 20 bytes is enough to hold a 64-bit
                    integer.  Decimal takes the most space.
                    This isn't enough for octal.
@@ -895,8 +892,7 @@ PyUnicode_FromFormatV(const char *format, va_list vargs)
     }
   expand:
     if (abuffersize > 20) {
-        /* add 1 for sprintf's trailing null byte */
-        abuffer = PyObject_Malloc(abuffersize + 1);
+        abuffer = PyObject_Malloc(abuffersize);
         if (!abuffer) {
             PyErr_NoMemory();
             goto fail;
@@ -2043,7 +2039,7 @@ PyObject *PyUnicode_DecodeUTF8Stateful(const char *s,
                see http://www.unicode.org/versions/Unicode5.2.0/ch03.pdf
                (table 3-7) and http://www.rfc-editor.org/rfc/rfc3629.txt
                Uncomment the 2 lines below to make them invalid,
-               code points: d800-dfff; UTF-8: \xed\xa0\x80-\xed\xbf\xbf. */
+               codepoints: d800-dfff; UTF-8: \xed\xa0\x80-\xed\xbf\xbf. */
             if ((s[1] & 0xc0) != 0x80 ||
                 (s[2] & 0xc0) != 0x80 ||
                 ((unsigned char)s[0] == 0xE0 &&
@@ -2341,7 +2337,7 @@ PyUnicode_DecodeUTF32Stateful(const char *s,
     }
 
     /* On narrow builds we split characters outside the BMP into two
-       code points => count how much extra space we need. */
+       codepoints => count how much extra space we need. */
 #ifndef Py_UNICODE_WIDE
     for (qq = q; e - qq >= 4; qq += 4)
         if (qq[iorder[2]] != 0 || qq[iorder[3]] != 0)
@@ -2376,7 +2372,7 @@ PyUnicode_DecodeUTF32Stateful(const char *s,
 
         if (ch >= 0x110000)
         {
-            errmsg = "code point not in range(0x110000)";
+            errmsg = "codepoint not in range(0x110000)";
             startinpos = ((const char *)q)-starts;
             endinpos = startinpos+4;
             goto utf32Error;
@@ -2453,7 +2449,7 @@ PyUnicode_EncodeUTF32(const Py_UNICODE *s,
         p += 4;                                 \
     } while(0)
 
-    /* In narrow builds we can output surrogate pairs as one code point,
+    /* In narrow builds we can output surrogate pairs as one codepoint,
        so we need less space. */
 #ifndef Py_UNICODE_WIDE
     for (i = pairs = 0; i < size-1; i++)

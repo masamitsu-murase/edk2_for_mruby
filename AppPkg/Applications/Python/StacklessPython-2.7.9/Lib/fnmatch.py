@@ -47,14 +47,12 @@ def filter(names, pat):
     import os,posixpath
     result=[]
     pat=os.path.normcase(pat)
-    try:
-        re_pat = _cache[pat]
-    except KeyError:
+    if not pat in _cache:
         res = translate(pat)
         if len(_cache) >= _MAXCACHE:
             _cache.clear()
-        _cache[pat] = re_pat = re.compile(res)
-    match = re_pat.match
+        _cache[pat] = re.compile(res)
+    match=_cache[pat].match
     if os.path is posixpath:
         # normcase on posix is NOP. Optimize it away from the loop.
         for name in names:
@@ -73,14 +71,12 @@ def fnmatchcase(name, pat):
     its arguments.
     """
 
-    try:
-        re_pat = _cache[pat]
-    except KeyError:
+    if not pat in _cache:
         res = translate(pat)
         if len(_cache) >= _MAXCACHE:
             _cache.clear()
-        _cache[pat] = re_pat = re.compile(res)
-    return re_pat.match(name) is not None
+        _cache[pat] = re.compile(res)
+    return _cache[pat].match(name) is not None
 
 def translate(pat):
     """Translate a shell PATTERN to a regular expression.

@@ -52,9 +52,7 @@ from errno import ENOENT
 
 __all__ = ['NullTranslations', 'GNUTranslations', 'Catalog',
            'find', 'translation', 'install', 'textdomain', 'bindtextdomain',
-           'bind_textdomain_codeset',
-           'dgettext', 'dngettext', 'gettext', 'lgettext', 'ldgettext',
-           'ldngettext', 'lngettext', 'ngettext',
+           'dgettext', 'dngettext', 'gettext', 'ngettext',
            ]
 
 _default_localedir = os.path.join(sys.prefix, 'share', 'locale')
@@ -296,12 +294,11 @@ class GNUTranslations(NullTranslations):
             # See if we're looking at GNU .mo conventions for metadata
             if mlen == 0:
                 # Catalog description
-                lastk = None
+                lastk = k = None
                 for item in tmsg.splitlines():
                     item = item.strip()
                     if not item:
                         continue
-                    k = v = None
                     if ':' in item:
                         k, v = item.split(':', 1)
                         k = k.strip().lower()

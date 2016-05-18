@@ -91,7 +91,6 @@ PyAPI_FUNC(void) PyErr_Restore(PyObject *, PyObject *, PyObject *);
 PyAPI_FUNC(int) PyErr_GivenExceptionMatches(PyObject *, PyObject *);
 PyAPI_FUNC(int) PyErr_ExceptionMatches(PyObject *);
 PyAPI_FUNC(void) PyErr_NormalizeException(PyObject**, PyObject**, PyObject**);
-PyAPI_FUNC(void) _PyErr_ReplaceException(PyObject *, PyObject *, PyObject *);
 
 /* */
 
@@ -119,6 +118,9 @@ PyAPI_FUNC(void) _PyErr_ReplaceException(PyObject *, PyObject *, PyObject *);
 PyAPI_DATA(PyObject *) PyExc_BaseException;
 PyAPI_DATA(PyObject *) PyExc_Exception;
 PyAPI_DATA(PyObject *) PyExc_StopIteration;
+#ifdef STACKLESS
+PyAPI_DATA(PyObject *) PyExc_TaskletExit;
+#endif
 PyAPI_DATA(PyObject *) PyExc_GeneratorExit;
 PyAPI_DATA(PyObject *) PyExc_StandardError;
 PyAPI_DATA(PyObject *) PyExc_ArithmeticError;

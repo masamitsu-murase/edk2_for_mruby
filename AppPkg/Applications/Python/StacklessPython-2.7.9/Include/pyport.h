@@ -1,3 +1,18 @@
+/** @file
+  Symbols and macros to supply platform-independent interfaces to basic
+  C language & library operations whose spellings vary across platforms.
+
+  Copyright (c) 2015, Daryl McDaniel. All rights reserved.<BR>
+  Copyright (c) 2011, Intel Corporation. All rights reserved.<BR>
+  This program and the accompanying materials are licensed and made available under
+  the terms and conditions of the BSD License that accompanies this distribution.
+  The full text of the license may be found at
+  http://opensource.org/licenses/bsd-license.
+
+  THE PROGRAM IS DISTRIBUTED UNDER THE BSD LICENSE ON AN "AS IS" BASIS,
+  WITHOUT WARRANTIES OR REPRESENTATIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED.
+**/
+
 #ifndef Py_PYPORT_H
 #define Py_PYPORT_H
 
@@ -280,7 +295,8 @@ typedef Py_intptr_t     Py_ssize_t;
 #if defined(_MSC_VER)
 #if defined(PY_LOCAL_AGGRESSIVE)
 /* enable more aggressive optimization for visual studio */
-#pragma optimize("agtw", on)
+//#pragma optimize("agtw", on)
+#pragma optimize("gt", on)    // a and w are not legal for VS2005
 #endif
 /* ignore warnings if the compiler decides not to inline a function */
 #pragma warning(disable: 4710)
@@ -563,7 +579,7 @@ extern "C" {
 #endif
 
 /* get and set x87 control word for VisualStudio/x86 */
-#if defined(_MSC_VER) && !defined(_WIN64) /* x87 not supported in 64-bit */
+#if defined(_MSC_VER) && !defined(_WIN64) && !defined(UEFI_C_SOURCE) /* x87 not supported in 64-bit */
 #define HAVE_PY_SET_53BIT_PRECISION 1
 #define _Py_SET_53BIT_PRECISION_HEADER \
     unsigned int old_387controlword, new_387controlword, out_387controlword

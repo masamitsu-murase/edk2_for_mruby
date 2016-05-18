@@ -67,6 +67,7 @@ else:
     from _ssl import SSLError as sslerror
     from _ssl import \
          RAND_add, \
+         RAND_egd, \
          RAND_status, \
          SSL_ERROR_ZERO_RETURN, \
          SSL_ERROR_WANT_READ, \
@@ -77,11 +78,6 @@ else:
          SSL_ERROR_WANT_CONNECT, \
          SSL_ERROR_EOF, \
          SSL_ERROR_INVALID_ERROR_CODE
-    try:
-        from _ssl import RAND_egd
-    except ImportError:
-        # LibreSSL does not provide RAND_egd
-        pass
 
 import os, sys, warnings
 

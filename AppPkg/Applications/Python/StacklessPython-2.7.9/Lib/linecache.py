@@ -36,12 +36,8 @@ def getlines(filename, module_globals=None):
 
     if filename in cache:
         return cache[filename][2]
-
-    try:
+    else:
         return updatecache(filename, module_globals)
-    except MemoryError:
-        clearcache()
-        return []
 
 
 def checkcache(filename=None):

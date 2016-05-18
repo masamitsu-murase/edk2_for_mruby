@@ -529,8 +529,14 @@ io_open(PyObject *self, PyObject *args, PyObject *kwds)
         PyObject *exc, *val, *tb, *close_result;
         PyErr_Fetch(&exc, &val, &tb);
         close_result = PyObject_CallMethod(result, "close", NULL);
-        _PyErr_ReplaceException(exc, val, tb);
-        Py_XDECREF(close_result);
+        if (close_result != NULL) {
+            Py_DECREF(close_result);
+            PyErr_Restore(exc, val, tb);
+        } else {
+            Py_XDECREF(exc);
+            Py_XDECREF(val);
+            Py_XDECREF(tb);
+        }
         Py_DECREF(result);
     }
     Py_XDECREF(modeobj);

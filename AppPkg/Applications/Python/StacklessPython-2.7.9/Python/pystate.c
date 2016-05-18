@@ -2,6 +2,11 @@
 /* Thread and interpreter state structures and their interfaces */
 
 #include "Python.h"
+#ifdef STACKLESS
+/* XXX this should vanish! */
+#include "compile.h"
+#include "frameobject.h"
+#endif
 
 /* --------------------------------------------------------------------------
 CAUTION
@@ -150,7 +155,15 @@ PyInterpreterState_Delete(PyInterpreterState *interp)
 static struct _frame *
 threadstate_getframe(PyThreadState *self)
 {
+#ifdef STACKLESS
+    /* make sure to return a real frame */
+    struct _frame *f = self->frame;
+    while (f != NULL && !PyFrame_Check(f))
+        f = f->f_back;
+    return f;
+#else
     return self->frame;
+#endif
 }
 
 static PyThreadState *
@@ -195,6 +208,10 @@ new_threadstate(PyInterpreterState *interp, int init)
         tstate->trash_delete_nesting = 0;
         tstate->trash_delete_later = NULL;
 
+#ifdef STACKLESS
+        STACKLESS_PYSTATE_NEW;
+#endif
+
         if (init)
             _PyThreadState_Init(tstate);
 
@@ -230,6 +247,9 @@ _PyThreadState_Init(PyThreadState *tstate)
 void
 PyThreadState_Clear(PyThreadState *tstate)
 {
+#ifdef STACKLESS
+    STACKLESS_PYSTATE_CLEAR;
+#endif
     if (Py_VerboseFlag && tstate->frame != NULL)
         fprintf(stderr,
           "PyThreadState_Clear: warning: thread still has a frame\n");

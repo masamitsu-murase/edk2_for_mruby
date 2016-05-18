@@ -495,6 +495,16 @@ PyStructSequence_InitType(PyTypeObject *type, PyStructSequence_Desc *desc)
     n_members = i;
 
     memcpy(type, &_struct_sequence_template, sizeof(PyTypeObject));
+
+    /* TODO: is this necessary now that things have been changed? */
+#ifdef STACKLESS
+    if (!PyType_HasFeature(type, Py_TPFLAGS_HAVE_STACKLESS_EXTENSION)) {
+    /* Extension compiled against vanilla Python with the unextended PyTypeObject. */
+    /* The template data has put in place the Stackless flags, restore their absence. */
+        type->tp_flags &= ~Py_TPFLAGS_HAVE_STACKLESS_EXTENSION;
+    }
+#endif
+
     type->tp_name = desc->name;
     type->tp_doc = desc->doc;
     type->tp_basicsize = sizeof(PyStructSequence)+

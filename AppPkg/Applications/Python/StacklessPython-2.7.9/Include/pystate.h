@@ -4,6 +4,9 @@
 
 #ifndef Py_PYSTATE_H
 #define Py_PYSTATE_H
+#ifdef STACKLESS
+#include "core/stackless_tstate.h"
+#endif
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -97,6 +100,9 @@ typedef struct _ts {
 
     int trash_delete_nesting;
     PyObject *trash_delete_later;
+#ifdef STACKLESS
+    PyStacklessState st;
+#endif
 
     /* XXX signal handlers should also be here */
 
