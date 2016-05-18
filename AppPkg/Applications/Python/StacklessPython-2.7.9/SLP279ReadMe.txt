@@ -1,8 +1,8 @@
-                                EDK II Python
+                            EDK II Stackless Python
                                    ReadMe
-                                Version 2.7.10
+                                Version 2.7.9
                                  Release 1.00
-                                  3 Nov. 2015
+                                  27 May. 2016
 
 
 1. OVERVIEW
@@ -18,7 +18,7 @@ packages within that distribution.
 2. Release Notes
 ================
   1)  All C extension modules must be statically linked (built in)
-  2)  The site and os modules must exist as discrete files in ...\lib\python27.10
+  2)  The site and os modules must exist as discrete files in ...\lib\python27.9
   3)  User-specific configurations are not supported.
   4)  Environment variables are not supported.
 
@@ -26,37 +26,37 @@ packages within that distribution.
 ======================================================
   3.1 Getting Python
   ==================
-  This file describes the UEFI port of version 2.7.10 of the CPython distribution.
-  For development ease, a subset of the Python 2.7.10 distribution has been
-  included as part of the AppPkg/Applications/Python/Python-2.7.10 source tree.
+  This file describes the UEFI port of version 2.7.9 of the CPython distribution.
+  For development ease, a subset of the Python 2.7.9 distribution has been
+  included as part of the AppPkg/Applications/Python/Python-2.7.9 source tree.
   If this is sufficient, you may skip to section 3.2, Building Python.
 
-  If a full distribution is desired, it can be merged into the Python-2.7.10
-  source tree.  Directory AppPkg/Applications/Python/Python-2.7.10 corresponds
-  to the root directory of the CPython 2.7.10 distribution.  The full
-  CPython 2.7.10 source code may be downloaded from
-  http://www.python.org/ftp/python/2.7.10/.
+  If a full distribution is desired, it can be merged into the Python-2.7.9
+  source tree.  Directory AppPkg/Applications/Python/Python-2.7.9 corresponds
+  to the root directory of the CPython 2.7.9 distribution.  The full
+  CPython 2.7.9 source code may be downloaded from
+  http://www.python.org/ftp/python/2.7.9/.
 
   A.  Within your EDK II development tree, extract the Python distribution into
-    AppPkg/Applications/Python/Python-2.7.10.  This should merge the additional
+    AppPkg/Applications/Python/Python-2.7.9.  This should merge the additional
     files into the source tree.  It will also create the following directories:
         Demo      Doc         Grammar     Mac       Misc
         PC        PCbuild     RISCOS      Tools
 
-    The greatest change will be within the Python-2.7.10/Lib directory where
+    The greatest change will be within the Python-2.7.9/Lib directory where
     many more packages and modules will be added.  These additional components
     may not have been ported to EDK II yet.
 
   3.2 Building Python
   ===================
-  A.  From the AppPkg/Applications/Python/Python-2.7.10 directory, execute the
+  A.  From the AppPkg/Applications/Python/Python-2.7.9 directory, execute the
     srcprep.bat (srcprep.sh) script to copy the header files from within the
-    PyMod-2.7.10 sub-tree into their corresponding directories within the
+    PyMod-2.7.9 sub-tree into their corresponding directories within the
     distribution.  This step only needs to be performed prior to the first
     build of Python, or if one of the header files within the PyMod tree has been
     modified.
 
-  B.  Edit PyMod-2.7.10\Modules\config.c to enable the built-in modules you need.
+  B.  Edit PyMod-2.7.9\Modules\config.c to enable the built-in modules you need.
     By default, it is configured for the minimally required set of modules.
       Mandatory Built-in Modules:
         edk2      errno       imp         marshal
@@ -109,7 +109,7 @@ system as follows:
     source directory.
 
   * Directory \Efi\StdLib\lib\python27.10 is populated with packages and modules
-    from the AppPkg/Applications/Python/Python-2.7.10/Lib directory.
+    from the AppPkg/Applications/Python/Python-2.7.9/Lib directory.
     The recommended minimum set of modules (.py, .pyc, and/or .pyo):
         os      stat      ntpath      warnings      traceback
         site    types     copy_reg    linecache     genericpath
@@ -120,10 +120,10 @@ system as follows:
 
   A script, libprep.bat (libprep.sh), is provided which facilitates the population
   of the target Lib directory.  Execute this script from within the
-  AppPkg/Applications/Python/Python-2.7.10 directory, providing a single argument
+  AppPkg/Applications/Python/Python-2.7.9 directory, providing a single argument
   which is the path to the destination directory.  The appropriate contents of the
-  AppPkg/Applications/Python/Python-2.7.10/Lib and
-  AppPkg/Applications/Python/Python-2.7.10/PyMod-2.7.10/Lib directories will be
+  AppPkg/Applications/Python/Python-2.7.9/Lib and
+  AppPkg/Applications/Python/Python-2.7.9/PyMod-2.7.9/Lib directories will be
   recursively copied into the specified destination directory.
 
 6. Example: Enabling socket support
@@ -146,7 +146,7 @@ system as follows:
   EXAMPLE:
       2.0 Shell> fs0:
       2.0 FS0:\> python2710
-      Python 2.7.10 (default, Oct 13 2015, 16:21:53) [C] on uefi
+      Python 2.7.9 (default, Oct 13 2015, 16:21:53) [C] on uefi
       Type "help", "copyright", "credits" or "license" for more information.
       >>> exit()
       2.0 FS0:\>
