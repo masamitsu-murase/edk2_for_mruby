@@ -107,24 +107,24 @@
 [Components]
 
 #### Sample Applications.
-  AppPkg/Applications/Hello/Hello.inf        # No LibC includes or functions.
-  AppPkg/Applications/Main/Main.inf          # Simple invocation. No other LibC functions.
-  AppPkg/Applications/Enquire/Enquire.inf    #
-  AppPkg/Applications/ArithChk/ArithChk.inf  #
+#   AppPkg/Applications/Hello/Hello.inf        # No LibC includes or functions.
+#   AppPkg/Applications/Main/Main.inf          # Simple invocation. No other LibC functions.
+#   AppPkg/Applications/Enquire/Enquire.inf    #
+#   AppPkg/Applications/ArithChk/ArithChk.inf  #
 
 #### A simple fuzzer for OrderedCollectionLib, in particular for
 #### BaseOrderedCollectionRedBlackTreeLib.
-  AppPkg/Applications/OrderedCollectionTest/OrderedCollectionTest.inf {
-    <LibraryClasses>
-      OrderedCollectionLib|MdePkg/Library/BaseOrderedCollectionRedBlackTreeLib/BaseOrderedCollectionRedBlackTreeLib.inf
-      DebugLib|MdePkg/Library/UefiDebugLibConOut/UefiDebugLibConOut.inf
-      DebugPrintErrorLevelLib|MdePkg/Library/BaseDebugPrintErrorLevelLib/BaseDebugPrintErrorLevelLib.inf
-    <PcdsFeatureFlag>
-      gEfiMdePkgTokenSpaceGuid.PcdValidateOrderedCollection|TRUE
-    <PcdsFixedAtBuild>
-      gEfiMdePkgTokenSpaceGuid.PcdDebugPropertyMask|0x2F
-      gEfiMdePkgTokenSpaceGuid.PcdDebugPrintErrorLevel|0x80400040
-  }
+#   AppPkg/Applications/OrderedCollectionTest/OrderedCollectionTest.inf {
+#     <LibraryClasses>
+#       OrderedCollectionLib|MdePkg/Library/BaseOrderedCollectionRedBlackTreeLib/BaseOrderedCollectionRedBlackTreeLib.inf
+#       DebugLib|MdePkg/Library/UefiDebugLibConOut/UefiDebugLibConOut.inf
+#       DebugPrintErrorLevelLib|MdePkg/Library/BaseDebugPrintErrorLevelLib/BaseDebugPrintErrorLevelLib.inf
+#     <PcdsFeatureFlag>
+#       gEfiMdePkgTokenSpaceGuid.PcdValidateOrderedCollection|TRUE
+#     <PcdsFixedAtBuild>
+#       gEfiMdePkgTokenSpaceGuid.PcdDebugPropertyMask|0x2F
+#       gEfiMdePkgTokenSpaceGuid.PcdDebugPrintErrorLevel|0x80400040
+#   }
 
 #### Un-comment the following line to build Python 2.7.2.
 #  AppPkg/Applications/Python/PythonCore.inf
@@ -133,7 +133,7 @@
 # AppPkg/Applications/Python/Python-2.7.10/Python2710.inf
 
 #### Un-comment the following line to build Stackless Python 2.7.9.
-# AppPkg/Applications/Python/StacklessPython-2.7.9/StacklessPython279.inf
+AppPkg/Applications/Python/StacklessPython-2.7.9/StacklessPython279.inf
 
 #### Un-comment the following line to build Lua.
 #  AppPkg/Applications/Lua/Lua.inf
