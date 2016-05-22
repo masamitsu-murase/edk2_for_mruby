@@ -92,10 +92,10 @@ slp_cstack_new(PyCStackObject **cst, intptr_t *stackref, PyTaskletObject *task)
     intptr_t *stackbase;
     ptrdiff_t size;
 
-    if (task && task->cstate) {
+    ts = NULL;
+    if (task && task->cstate)
         ts = task->cstate->tstate;
-        assert(ts);
-    } else
+    if (ts == NULL)
         ts = PyThreadState_GET();
 
     stackbase = ts->st.cstack_base;
