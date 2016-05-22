@@ -23,17 +23,7 @@
  */
 
 /* for the SEH things */
-#ifndef _WINDOWS_
-#define WIN32_LEAN_AND_MEAN
-#ifdef BYTE
-#undef BYTE
-#endif
-#ifdef Yield
-#undef Yield /* remove definition from Python_ast.h to avoid conflict */
-#endif
-#include <windows.h>
-#endif
-#define _SEH32
+//#define _SEH32
 
 #define alloca _alloca
 
@@ -73,22 +63,3 @@ slp_switch(void)
 
 #endif
 
-/*
- * further self-processing support
- */
-
-/* we have IsBadReadPtr available, so we can peek at objects */
-#define STACKLESS_SPY
-
-#ifdef IMPLEMENT_STACKLESSMODULE
-#include "Windows.h"
-#define CANNOT_READ_MEM(p, bytes) IsBadReadPtr(p, bytes)
-
-static int IS_ON_STACK(void*p)
-{
-    int stackref;
-    int stackbase = ((int)&stackref) & 0xfffff000;
-    return (int)p >= stackbase && (int)p < stackbase + 0x00100000;
-}
-
-#endif

@@ -264,11 +264,12 @@
   Stackless/pickling/safe_pickle.c 
   Stackless/testbench/simwrapper.c 
 
-  Stackless/platf/switch_x64_masm.asm
+[Sources.X64]
+  Stackless/platf/switch_x64_masm.asm|MSFT
+  Stackless/platf/switch_amd64_unix_gas.s|GCC
 
 [BuildOptions]
-   MSFT:*_*_IA32_CC_FLAGS         = /Oi- /wd4018 /wd4054 /wd4055 /wd4101 /wd4131 /wd4152 /wd4204 /wd4210 /wd4244 /wd4267 /wd4305 /wd4310 /wd4389 /wd4701 /wd4702 /wd4706 /I$(WORKSPACE)\AppPkg\Applications\Python\StacklessPython-2.7.9\Ia32 /I$(WORKSPACE)\AppPkg\Applications\Python\StacklessPython-2.7.9\Include /DHAVE_MEMMOVE /DUSE_PYEXPAT_CAPI /DXML_STATIC
-   MSFT:*_*_X64_CC_FLAGS          = /Oi- /wd4018 /wd4054 /wd4055 /wd4101 /wd4131 /wd4152 /wd4189 /wd4204 /wd4210 /wd4244 /wd4267 /wd4305 /wd4310 /wd4389 /wd4701 /wd4702 /wd4703 /wd4706 /I$(WORKSPACE)\AppPkg\Applications\Python\StacklessPython-2.7.9\Stackless /I$(WORKSPACE)\AppPkg\Applications\Python\StacklessPython-2.7.9\X64 /I$(WORKSPACE)\AppPkg\Applications\Python\StacklessPython-2.7.9\Include /DHAVE_MEMMOVE /DUSE_PYEXPAT_CAPI /DXML_STATIC /DSTACKLESS
-    GCC:*_*_IA32_CC_FLAGS         = -fno-builtin -Wno-format -I$(WORKSPACE)/AppPkg/Applications/Python/StacklessPython-2.7.9/Ia32 -I$(WORKSPACE)/AppPkg/Applications/Python/StacklessPython-2.7.9/PyMod-2.7.9/Include -I$(WORKSPACE)/AppPkg/Applications/Python/StacklessPython-2.7.9/Include -DHAVE_MEMMOVE -DUSE_PYEXPAT_CAPI -DXML_STATIC
-    GCC:*_*_X64_CC_FLAGS          = -Wno-format -I$(WORKSPACE)/AppPkg/Applications/Python/StacklessPython-2.7.9/X64 -I$(WORKSPACE)/AppPkg/Applications/Python/StacklessPython-2.7.9/PyMod-2.7.9/Include -I$(WORKSPACE)/AppPkg/Applications/Python/StacklessPython-2.7.9/Include -DHAVE_MEMMOVE -DUSE_PYEXPAT_CAPI -DXML_STATIC
-   MSFT:*_*_X64_DLINK_FLAGS = /STACK:2000000
+   MSFT:*_*_IA32_CC_FLAGS         = /Oi- /wd4018 /wd4054 /wd4055 /wd4101 /wd4131 /wd4152 /wd4189 /wd4204 /wd4210 /wd4244 /wd4267 /wd4305 /wd4310 /wd4389 /wd4701 /wd4702 /wd4703 /wd4706 /I$(WORKSPACE)\AppPkg\Applications\Python\StacklessPython-2.7.9\Stackless /I$(WORKSPACE)\AppPkg\Applications\Python\StacklessPython-2.7.9\Ia32 /I$(WORKSPACE)\AppPkg\Applications\Python\StacklessPython-2.7.9\Include /DHAVE_MEMMOVE /DUSE_PYEXPAT_CAPI /DXML_STATIC /DSTACKLESS_MSFT_IA32
+   MSFT:*_*_X64_CC_FLAGS          = /Oi- /wd4018 /wd4054 /wd4055 /wd4101 /wd4131 /wd4152 /wd4189 /wd4204 /wd4210 /wd4244 /wd4267 /wd4305 /wd4310 /wd4389 /wd4701 /wd4702 /wd4703 /wd4706 /I$(WORKSPACE)\AppPkg\Applications\Python\StacklessPython-2.7.9\Stackless /I$(WORKSPACE)\AppPkg\Applications\Python\StacklessPython-2.7.9\X64 /I$(WORKSPACE)\AppPkg\Applications\Python\StacklessPython-2.7.9\Include /DHAVE_MEMMOVE /DUSE_PYEXPAT_CAPI /DXML_STATIC /DSTACKLESS_MSFT_X64
+    GCC:*_*_IA32_CC_FLAGS         = -fno-builtin -Wno-format -I$(WORKSPACE)/AppPkg/Applications/Python/StacklessPython-2.7.9/Stackless -I$(WORKSPACE)/AppPkg/Applications/Python/StacklessPython-2.7.9/Ia32 -I$(WORKSPACE)/AppPkg/Applications/Python/StacklessPython-2.7.9/PyMod-2.7.9/Include -I$(WORKSPACE)/AppPkg/Applications/Python/StacklessPython-2.7.9/Include -DHAVE_MEMMOVE -DUSE_PYEXPAT_CAPI -DXML_STATIC /DSTACKLESS_GCC_IA32
+    GCC:*_*_X64_CC_FLAGS          = -Wno-format -I$(WORKSPACE)/AppPkg/Applications/Python/StacklessPython-2.7.9/Stackless -I$(WORKSPACE)/AppPkg/Applications/Python/StacklessPython-2.7.9/X64 -I$(WORKSPACE)/AppPkg/Applications/Python/StacklessPython-2.7.9/PyMod-2.7.9/Include -I$(WORKSPACE)/AppPkg/Applications/Python/StacklessPython-2.7.9/Include -DHAVE_MEMMOVE -DUSE_PYEXPAT_CAPI -DXML_STATIC /DSTACKLESS_GCC_X64

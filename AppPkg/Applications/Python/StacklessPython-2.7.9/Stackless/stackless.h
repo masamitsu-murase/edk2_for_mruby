@@ -41,29 +41,17 @@ extern "C" {
 #ifdef STACKLESS_OFF
 #undef STACKLESS
     /* an option to switch it off */
-#elif defined(MS_WIN32) && !defined(MS_WIN64) && defined(_M_IX86)
+#elif defined(STACKLESS_MSFT_IA32)
     /* MS Visual Studio on X86 */
-#elif defined(_WIN64) && defined(_M_X64)
+#elif defined(STACKLESS_MSFT_X64)
     /* microsoft on 64 bit x64 thingies */
-#elif defined(__GNUC__) && defined(__i386__)
+#elif defined(STACKLESS_GCC_IA32)
     /* gcc on X86 */
-#elif defined(__GNUC__) && defined(__amd64__)
+#elif defined(STACKLESS_GCC_X64)
     /* gcc on AMD64 */
-#elif defined(__GNUC__) && defined(__PPC__) && defined(__linux__)
-    /* gcc on PowerPC */
-#elif defined(__GNUC__) && defined(__ppc__) && defined(__APPLE__)
-    /* Apple MacOS X on PowerPC */
-#elif defined(__GNUC__) && defined(sparc) && defined(sun)
-    /* SunOs on sparc */
-#elif defined(__GNUC__) && defined(__s390__) && defined(__linux__)
-    /* Linux/S390 */
-#elif defined(__GNUC__) && defined(__s390x__) && defined(__linux__)
-    /* Linux/S390 zSeries */
-#elif defined(__GNUC__) && defined(__mips__) && defined(__linux__)
-    /* MIPS */
 #else
     /* no supported platform */
-//#undef STACKLESS
+#undef STACKLESS
 #endif
 
 #ifdef __cplusplus
