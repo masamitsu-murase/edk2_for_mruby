@@ -70,6 +70,7 @@ extern void init_weakref(void);
 extern void init_winreg(void);
 extern void initxxsubtype(void);
 extern void initzipimport(void);
+extern void initembeddedimport(void);
 extern void initzlib(void);
 
 extern void PyMarshal_Init(void);
@@ -141,6 +142,8 @@ struct _inittab _PyImport_Inittab[] = {
     {"math", initmath},
     {"operator", initoperator},
     {"time", inittime},
+
+    {"embeddedimport", initembeddedimport},
 
     /* These four modules should always be built in. */
     {"edk2", initedk2},
