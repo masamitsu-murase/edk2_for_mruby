@@ -1178,6 +1178,26 @@ edk2_system(PyObject *self, PyObject *args)
     Py_END_ALLOW_THREADS
     return PyInt_FromLong(sts);
 }
+
+
+PyObject *
+edk2ex_system(char *command, int capture_stdout, int capture_stderr);
+
+PyDoc_STRVAR(edk2_system_ex__doc__,
+"system_ex(command, capture_stdout, capture_stderr) -> exit_status\n\n\
+Execute the command (a string) in a subshell.");
+
+static PyObject *
+edk2_system_ex(PyObject *self, PyObject *args)
+{
+    char *command;
+    int capture_stdout, capture_stderr;
+
+    if (!PyArg_ParseTuple(args, "sii:system", &command, &capture_stdout, &capture_stderr))
+        return NULL;
+
+    return edk2ex_system(command, capture_stdout, capture_stderr);
+}
 #endif
 
 
@@ -3759,6 +3779,7 @@ static PyMethodDef edk2_methods[] = {
 #endif /* HAVE_SYMLINK */
 #ifdef HAVE_SYSTEM
     {"system",          edk2_system, METH_VARARGS, edk2_system__doc__},
+    {"system_ex",       edk2_system_ex, METH_VARARGS, edk2_system_ex__doc__},
 #endif
     {"umask",           edk2_umask,      METH_VARARGS, edk2_umask__doc__},
 #ifdef HAVE_UNAME
