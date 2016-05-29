@@ -1758,7 +1758,8 @@ EfiShellExecute(
     return (EFI_UNSUPPORTED);
   }
 
-  if (NestingEnabled()) {
+//  if (NestingEnabled()) {
+  if (FALSE) {
     DevPath = AppendDevicePath (ShellInfoObject.ImageDevPath, ShellInfoObject.FileDevPath);
 
     DEBUG_CODE_BEGIN();
