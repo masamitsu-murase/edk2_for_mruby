@@ -102,4 +102,33 @@ NORESTORE:
 
 slp_switch ENDP 
 	
+; __chkstk is called from alloca.
+;  rax has the size of alloca.
+__chkstk PROC
+	sub  rsp,10h
+	mov  qword ptr [rsp],r10
+	mov  qword ptr [rsp+8],r11
+
+	lea  r10,[rsp+18h]
+	mov  r11,r10
+	sub  r10,rax
+	and  r10w,0F000h
+	and  r11w,0F000h
+	test [r11],r11
+	cmp  r10,r11
+	jae   loop_end
+
+loop_start:
+	lea  r11,[r11-1000h]
+	test [r11],r11
+	cmp  r10,r11
+	jb   loop_start
+
+loop_end:
+	mov  r10,qword ptr [rsp]
+	mov  r11,qword ptr [rsp+8]
+	add  rsp,10h
+	ret
+__chkstk ENDP
+
 END

@@ -851,8 +851,8 @@ test_cframe(PyObject *self, PyObject *args, PyObject *kwds)
             VALUE_ERROR(
                 "test_cframe: words are limited by 0 and " \
                 STACK_MAX_USESTR, NULL);
-//@>     if (extra > 0)
-//@>         alloca(extra*sizeof(PyObject*));
+    if (extra > 0)
+        alloca(extra*sizeof(PyObject*));
     for (i=0; i<switches; i++) {
         Py_DECREF(ret);
         ret = PyStackless_Schedule(Py_None, 0);

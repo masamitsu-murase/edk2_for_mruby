@@ -276,15 +276,14 @@ climb_stack_and_eval_frame(PyFrameObject *f)
     intptr_t probe;
     ptrdiff_t needed = &probe - ts->st.cstack_base;
     /* in rare cases, the need might have vanished due to the recursion */
-//@>     intptr_t *goobledigoobs;
-//@>     if (needed > 0) {
-//@>     goobledigoobs = alloca(needed * sizeof(intptr_t));
-//@>         if (goobledigoobs == NULL)
-//@>             return NULL;
-//@>     }
+    intptr_t *goobledigoobs;
+    if (needed > 0) {
+    goobledigoobs = alloca(needed * sizeof(intptr_t));
+        if (goobledigoobs == NULL)
+            return NULL;
+    }
     return slp_eval_frame(f);
 }
-
 
 PyObject *
 slp_eval_frame(PyFrameObject *f)
