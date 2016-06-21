@@ -34,9 +34,7 @@ extern "C" {
  * ...and then write your support code and mention it in the
  * common slp_platformselect.h file.
  */
-#ifndef STACKLESS
 #define STACKLESS
-#endif
 
 #ifdef STACKLESS_OFF
 #undef STACKLESS

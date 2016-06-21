@@ -557,8 +557,6 @@ int slp_prepare_slots(PyTypeObject*);
 
 /* turn the stackless flag macros into dummies */
 
-#error HOGEHOGE
-
 #define STACKLESS_GETARG() int stackless = 0
 #define STACKLESS_PROMOTE(func) stackless = 0
 #define STACKLESS_PROMOTE_FLAG(flag) stackless = 0

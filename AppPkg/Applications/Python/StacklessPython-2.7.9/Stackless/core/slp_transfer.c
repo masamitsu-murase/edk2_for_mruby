@@ -97,15 +97,15 @@ climb_stack_and_transfer(PyCStackObject **cstprev, PyCStackObject *cst,
     register ptrdiff_t needed = &probe - ts->st.cstack_base;
     /* in rare cases, the need might have vanished due to the recursion */
     register intptr_t *goobledigoobs;
-//@>     if (needed > 0) {
-//@>         goobledigoobs = alloca(needed * sizeof(intptr_t));
-//@>         if (goobledigoobs == NULL)
-//@>             return -1;
-//@>         /* hinder the compiler to optimise away 
-//@>            goobledigoobs and the alloca call. 
-//@>            This happens with gcc 4.7.x and -O2 */
-//@>         global_goobledigoobs = goobledigoobs;
-//@>     }
+    if (needed > 0) {
+        goobledigoobs = alloca(needed * sizeof(intptr_t));
+        if (goobledigoobs == NULL)
+            return -1;
+        /* hinder the compiler to optimise away 
+           goobledigoobs and the alloca call. 
+           This happens with gcc 4.7.x and -O2 */
+        global_goobledigoobs = goobledigoobs;
+    }
     return slp_transfer(cstprev, cst, prev);
 }
 
