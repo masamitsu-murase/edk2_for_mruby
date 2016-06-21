@@ -6,4 +6,4 @@
 /* keep this entry up-to-date */
 #define STACKLESS_VERSION "3.1b3 060516"
 
-#define UEFI_STACKLESS_VERSION "1.00L10"
+#define UEFI_STACKLESS_VERSION "1.00"
