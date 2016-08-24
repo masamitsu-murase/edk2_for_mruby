@@ -462,8 +462,10 @@ calculate_path(void)
       This is the full path to the platform independent libraries.
 ########################################################################### */
 
-    strncpy(prefix, volume_name, MAXPATHLEN);
-    joinpath(prefix, PREFIX);
+//    strncpy(prefix, volume_name, MAXPATHLEN);
+//    joinpath(prefix, PREFIX);
+    strcpy(prefix, progpath);
+    reduce(prefix);
     joinpath(prefix, lib_python);
 
 /* ###########################################################################
@@ -482,8 +484,9 @@ calculate_path(void)
       Build the FULL path to dynamically loadable libraries.
 ########################################################################### */
 
-    strncpy(exec_prefix, volume_name, MAXPATHLEN);    // "fs0:"
-    joinpath(exec_prefix, EXEC_PREFIX);               // "fs0:/Efi/StdLib"
+//    strncpy(exec_prefix, volume_name, MAXPATHLEN);    // "fs0:"
+//    joinpath(exec_prefix, EXEC_PREFIX);               // "fs0:/Efi/StdLib"
+    strcpy(exec_prefix, prefix);
     joinpath(exec_prefix, lib_python);                // "fs0:/Efi/StdLib/lib/python.27"
     joinpath(exec_prefix, "lib-dynload");             // "fs0:/Efi/StdLib/lib/python.27/lib-dynload"
 
