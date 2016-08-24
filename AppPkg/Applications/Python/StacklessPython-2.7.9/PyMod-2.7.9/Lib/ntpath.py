@@ -25,7 +25,7 @@ import genericpath
 import warnings
 
 from genericpath import *
-from genericpath import _unicode
+_unicode = unicode
 
 __all__ = ["normcase","isabs","join","splitdrive","split","splitext",
            "basename","dirname","commonprefix","getsize","getmtime",

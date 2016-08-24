@@ -18,6 +18,10 @@
 
 #define PLATFORM    "uefi"
 
+//#define PREFIX ""
+//#define EXEC_PREFIX ""
+#define PYTHONPATH ".\\lib;.\\lib\\plat-uefi"
+
 /* Define if building universal (internal helper macro) */
 #undef AC_APPLE_UNIVERSAL_BUILD
 
@@ -973,10 +977,10 @@
 #define PACKAGE_BUGREPORT   "edk2-devel@lists.01.org"
 
 /* Define to the full name of this package. */
-#define PACKAGE_NAME    "EDK II Python 2.7.10 Package"
+#define PACKAGE_NAME    "EDK II Stackless Python 2.7.9 Package"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING  "EDK II Python 2.7.10 Package V0.1"
+#define PACKAGE_STRING  "EDK II Stackless Python 2.7.9 Package V0.1"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME   "EADK_Python"
