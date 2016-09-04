@@ -892,6 +892,7 @@ edk2_getcwd(PyObject *self, PyObject *noargs)
     char *tmpbuf = NULL;
     char *res = NULL;
     PyObject *dynamic_return;
+    size_t len;
 
     Py_BEGIN_ALLOW_THREADS
     do {
@@ -910,6 +911,12 @@ edk2_getcwd(PyObject *self, PyObject *noargs)
     if (res == NULL)
         return edk2_error();
 
+    len = strlen(tmpbuf);
+    if (tmpbuf[len - 1] == ':' && len + 2 <= (size_t)bufsize) {
+        tmpbuf[len] = '\\';
+        tmpbuf[len + 1] = '\0';
+    }
+
     dynamic_return = PyString_FromString(tmpbuf);
     free(tmpbuf);
 
@@ -926,12 +933,20 @@ edk2_getcwdu(PyObject *self, PyObject *noargs)
 {
     char buf[1026];
     char *res;
+    size_t len;
 
     Py_BEGIN_ALLOW_THREADS
     res = getcwd(buf, sizeof buf);
     Py_END_ALLOW_THREADS
     if (res == NULL)
         return edk2_error();
+
+    len = strlen(buf);
+    if (buf[len - 1] == ':' && len + 2 <= sizeof(buf)) {
+        buf[len] = '\\';
+        buf[len + 1] = '\0';
+    }
+
     return PyUnicode_Decode(buf, strlen(buf), Py_FileSystemDefaultEncoding,"strict");
 }
 #endif /* Py_USING_UNICODE */
