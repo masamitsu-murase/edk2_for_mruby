@@ -136,6 +136,13 @@ elif 'edk2' in _names:
         pass
     import ntpath as path
 
+    org_chdir = chdir
+    def chdir(p):
+        p = path.normpath(path.abspath(p))
+        s = system_ex("cd \"" + p + "\"", 1, 1)
+        if (not s) or s[1].startswith("cd: "):
+            raise OSError(s[1].strip())
+
     import edk2
     __all__.extend(_get_exports_list(edk2))
     del edk2
