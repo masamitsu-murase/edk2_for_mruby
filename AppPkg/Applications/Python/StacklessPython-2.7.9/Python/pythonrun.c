@@ -80,7 +80,7 @@ int Py_InteractiveFlag; /* Needed by Py_FdIsInteractive() below */
 int Py_InspectFlag; /* Needed to determine whether to exit at SystemExit */
 int Py_NoSiteFlag; /* Suppress 'import site' */
 int Py_BytesWarningFlag; /* Warn on str(bytes) and str(buffer) */
-int Py_DontWriteBytecodeFlag; /* Suppress writing bytecode files (*.py[co]) */
+int Py_DontWriteBytecodeFlag = 1; /* Suppress writing bytecode files (*.py[co]) */
 int Py_UseClassExceptionsFlag = 1; /* Needed by bltinmodule.c: deprecated */
 int Py_FrozenFlag; /* Needed by getpath.c */
 int Py_UnicodeFlag = 0; /* Needed by compile.c */
