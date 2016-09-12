@@ -101,7 +101,7 @@ struct _inittab _PyImport_Inittab[] = {
 
     {"array", initarray},
     {"cmath", initcmath},
-    //{"cPickle", initcPickle},
+    {"cPickle", initcPickle},
     {"datetime", initdatetime},
     //{"future_builtins", initfuture_builtins},
     {"parser", initparser},
