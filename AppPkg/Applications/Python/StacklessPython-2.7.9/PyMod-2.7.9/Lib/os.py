@@ -128,7 +128,7 @@ elif 'riscos' in _names:
 
 elif 'edk2' in _names:
     name = 'edk2'
-    linesep = '\n'
+    linesep = '\r\n'
     from edk2 import *
     try:
         from edk2 import _exit
