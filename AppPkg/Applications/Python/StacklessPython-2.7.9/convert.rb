@@ -76,7 +76,7 @@ Dir.chdir(__dir__) do
       dup_item = list.find{ |i| i[:filename] == item[:filename] }
       list.push(item) unless dup_item
 
-      if dup_item[:data] == File.open(item[:filename], "r", &:read).b + "\0".b
+      if dup_item && dup_item[:data] == File.open(item[:filename], "r", &:read).b + "\0".b
         puts("Duplicated: #{item[:filename]}")
         Dir.chdir("../PyMod-2.7.9/Lib") do
           system("git rm #{item[:filename]}")
