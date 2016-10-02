@@ -85,6 +85,6 @@ Dir.chdir(__dir__) do
     end
   end
 
-  output_list(list)
+  output_list(list.sort_by{ |i| i[:filename] })
 end
 
