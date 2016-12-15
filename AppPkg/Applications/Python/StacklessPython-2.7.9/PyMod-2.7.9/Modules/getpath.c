@@ -572,7 +572,9 @@ calculate_path(void)
 
             if (is_absolute(defpath) != 1) {
                 strcat(buf, prefix);
-                strcat(buf, separator);
+                if (!is_sep(prefix[strlen(prefix) - 1])) {
+                    strcat(buf, separator);
+                }
             }
 
             if (delim) {
