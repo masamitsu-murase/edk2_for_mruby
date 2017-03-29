@@ -277,7 +277,7 @@ Py_Main(int argc, char **argv)
           }
           break;
         case 'E':
-          Py_IgnoreEnvironmentFlag++;
+          Py_IgnoreEnvironmentFlag--;
           break;
         default:
           break;

@@ -84,7 +84,7 @@ int Py_DontWriteBytecodeFlag = 1; /* Suppress writing bytecode files (*.py[co]) 
 int Py_UseClassExceptionsFlag = 1; /* Needed by bltinmodule.c: deprecated */
 int Py_FrozenFlag; /* Needed by getpath.c */
 int Py_UnicodeFlag = 0; /* Needed by compile.c */
-int Py_IgnoreEnvironmentFlag; /* e.g. PYTHONPATH, PYTHONHOME */
+int Py_IgnoreEnvironmentFlag = 1; /* e.g. PYTHONPATH, PYTHONHOME */
 /* _XXX Py_QnewFlag should go away in 2.3.  It's true iff -Qnew is passed,
   on the command line, and is used in 2.2 by ceval.c to make all "/" divisions
   true divisions (which they will be in 2.3). */
